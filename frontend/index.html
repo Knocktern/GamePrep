@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GamePrep Lobby</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="wrap">
+    <div class="top-bar">
+      <div class="logo">GamePrep</div>
+      <div class="top-bar-tag">Lobby</div>
+    </div>
+
+    <header class="hero">
+      <div class="brand">
+        <span class="badge">Level Up</span>
+        <h1>GamePrep</h1>
+        <p>Grind levels. Crush interviews.</p>
+      </div>
+      <div class="status">
+        <div class="pulse"></div>
+        <span>Online lobby</span>
+      </div>
+    </header>
+
+    <section class="stats-bar">
+      <div id="totalPlayersLabel" class="stat-item">Total Players: 0</div>
+      <div id="topLevelLabel" class="stat-item">Top Level: 0</div>
+    </section>
+
+    <main class="grid">
+      <section class="panel">
+        <h2>Create Player</h2>
+        <p class="panel-sub">Spawn a new contender for the leaderboard.</p>
+        <div class="form-row">
+          <input id="username" type="text" maxlength="50" placeholder="Enter username">
+          <button id="createBtn" type="button">Create</button>
+        </div>
+        <p class="hint">Players start at level 1 with 0 XP.</p>
+        <div id="statusMessage" class="status-message" aria-live="polite"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Players</h2>
+        <div id="playersContainer" class="cards"></div>
+      </section>
+
+      <section class="panel game-panel">
+        <div class="game-header">
+          <h2>Game Arena</h2>
+          <span class="game-tag">Solo Run</span>
+        </div>
+        <div class="field">
+          <label for="selectedPlayer">Player</label>
+          <select id="selectedPlayer"></select>
+        </div>
+        <div class="field">
+          <label for="difficultySelect">Difficulty</label>
+          <select id="difficultySelect">
+            <option value="EASY">EASY</option>
+            <option value="MEDIUM">MEDIUM</option>
+            <option value="HARD">HARD</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="questionCount">Questions</label>
+          <input id="questionCount" type="number" min="1" max="20" value="5">
+        </div>
+        <button id="startGameBtn" type="button">Start Game</button>
+        <div id="gameError" class="status-message" aria-live="polite"></div>
+
+        <div id="gameArea" class="game-area">
+          <p class="hint">Select a player and launch a run to see questions.</p>
+        </div>
+        <div id="gameResult" class="game-result"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
