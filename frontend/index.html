@@ -3,96 +3,281 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GamePrep Lobby</title>
+  <title>GamePrep — Lobby</title>
+  <meta name="description" content="GamePrep: The gamified technical interview preparation platform. Level up your coding skills.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="wizard.css">
 </head>
 <body>
   <div class="scanlines"></div>
-  <div class="wrap">
-    <div class="top-bar">
-      <div class="logo">GamePrep</div>
-      <div class="top-bar-tag">Lobby</div>
+  <div class="particles" id="particles"></div>
+
+  <!-- ===== TOP NAV ===== -->
+  <nav class="top-bar">
+    <div class="logo">GamePrep</div>
+    <div class="nav-center">
+      <!-- Step indicator (shown during wizard) -->
+      <div id="stepIndicator" class="step-indicator hidden">
+        <div class="step-dot active" data-step="1" title="Field"></div>
+        <div class="step-line"></div>
+        <div class="step-dot" data-step="2" title="Topic"></div>
+        <div class="step-line"></div>
+        <div class="step-dot" data-step="3" title="Difficulty"></div>
+        <div class="step-line"></div>
+        <div class="step-dot" data-step="4" title="Questions"></div>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="player-chip" id="playerChip">
+        <div class="chip-avatar" id="chipAvatar">?</div>
+        <span id="chipName">Loading…</span>
+      </div>
+      <button id="logoutBtn" class="btn-ghost btn-sm" type="button">Log Out</button>
+    </div>
+  </nav>
+
+  <!-- ===== VIEWS CONTAINER ===== -->
+  <div class="views-container" id="viewsContainer">
+
+    <!-- ==============================
+         VIEW: LOBBY
+    ============================== -->
+    <div class="view active" id="viewLobby">
+      <div class="view-inner">
+        <header class="lobby-hero">
+          <div class="hero-glow"></div>
+          <div class="badge-pill">⚡ Live Arena</div>
+          <h1 class="hero-title">GamePrep</h1>
+          <p class="hero-sub">Grind levels. Crush interviews. Dominate the leaderboard.</p>
+          <div class="stats-row">
+            <div class="stat-chip">
+              <span class="stat-icon">👥</span>
+              <span id="totalPlayersLabel">0 Players</span>
+            </div>
+            <div class="stat-chip">
+              <span class="stat-icon">🏆</span>
+              <span id="topLevelLabel">Top Level: 0</span>
+            </div>
+            <div class="stat-chip">
+              <span class="stat-icon">🟢</span>
+              <span>Online</span>
+            </div>
+          </div>
+          <button id="startRunBtn" class="btn-primary btn-hero" type="button">
+            <span>Start a Run</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </header>
+
+        <section class="leaderboard-section">
+          <div class="section-header">
+            <h2 class="section-title">Leaderboard</h2>
+            <div class="section-tag">Top Players</div>
+          </div>
+          <div id="playersContainer" class="leaderboard-grid"></div>
+        </section>
+      </div>
     </div>
 
-    <header class="hero">
-      <div class="brand">
-        <span class="badge">Level Up</span>
-        <h1>GamePrep</h1>
-        <p>Grind levels. Crush interviews.</p>
+    <!-- ==============================
+         VIEW: STEP 1 — PREP FIELD
+    ============================== -->
+    <div class="view" id="viewStep1">
+      <div class="view-inner wizard-view">
+        <div class="wizard-header">
+          <button class="btn-back" id="backFromStep1" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Back
+          </button>
+          <div class="wizard-meta">
+            <div class="wizard-step-label">Step 1 of 4</div>
+            <h2 class="wizard-title">Choose Your Field</h2>
+            <p class="wizard-sub">Which area do you want to prepare for?</p>
+          </div>
+        </div>
+        <div class="choice-grid" id="fieldGrid">
+          <button class="choice-card" data-value="OOP" type="button">
+            <div class="choice-icon">🧩</div>
+            <div class="choice-name">OOP</div>
+            <div class="choice-desc">Object-Oriented Programming</div>
+          </button>
+          <button class="choice-card" data-value="DSA" type="button">
+            <div class="choice-icon">📊</div>
+            <div class="choice-name">DSA</div>
+            <div class="choice-desc">Data Structures & Algorithms</div>
+          </button>
+          <button class="choice-card" data-value="OPERATING_SYSTEM" type="button">
+            <div class="choice-icon">💻</div>
+            <div class="choice-name">OS</div>
+            <div class="choice-desc">Operating Systems</div>
+          </button>
+          <button class="choice-card" data-value="DBMS" type="button">
+            <div class="choice-icon">🗄️</div>
+            <div class="choice-name">DBMS</div>
+            <div class="choice-desc">Database Management Systems</div>
+          </button>
+        </div>
       </div>
-      <div class="status">
-        <div class="pulse"></div>
-        <span>Online lobby</span>
+    </div>
+
+    <!-- ==============================
+         VIEW: STEP 2 — TOPIC
+    ============================== -->
+    <div class="view" id="viewStep2">
+      <div class="view-inner wizard-view">
+        <div class="wizard-header">
+          <button class="btn-back" id="backFromStep2" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Back
+          </button>
+          <div class="wizard-meta">
+            <div class="wizard-step-label">Step 2 of 4</div>
+            <h2 class="wizard-title">Pick a Topic</h2>
+            <p class="wizard-sub">Select the specific concept to drill.</p>
+          </div>
+        </div>
+        <div class="choice-grid topic-grid" id="topicGrid"></div>
       </div>
-    </header>
+    </div>
 
-    <section class="stats-bar">
-      <div id="totalPlayersLabel" class="stat-item">Total Players: 0</div>
-      <div id="topLevelLabel" class="stat-item">Top Level: 0</div>
-    </section>
+    <!-- ==============================
+         VIEW: STEP 3 — DIFFICULTY
+    ============================== -->
+    <div class="view" id="viewStep3">
+      <div class="view-inner wizard-view">
+        <div class="wizard-header">
+          <button class="btn-back" id="backFromStep3" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Back
+          </button>
+          <div class="wizard-meta">
+            <div class="wizard-step-label">Step 3 of 4</div>
+            <h2 class="wizard-title">Set the Difficulty</h2>
+            <p class="wizard-sub">How hard do you want to go?</p>
+          </div>
+        </div>
+        <div class="choice-grid diff-grid" id="difficultyGrid">
+          <button class="choice-card diff-easy" data-value="EASY" type="button">
+            <div class="choice-icon">🌱</div>
+            <div class="choice-name">Easy</div>
+            <div class="choice-desc">Perfect for warm-ups and beginners</div>
+            <div class="diff-xp">+10 XP / question</div>
+          </button>
+          <button class="choice-card diff-medium" data-value="MEDIUM" type="button">
+            <div class="choice-icon">🔥</div>
+            <div class="choice-name">Medium</div>
+            <div class="choice-desc">Intermediate challenges to level up</div>
+            <div class="diff-xp">+25 XP / question</div>
+          </button>
+          <button class="choice-card diff-hard" data-value="HARD" type="button">
+            <div class="choice-icon">💀</div>
+            <div class="choice-name">Hard</div>
+            <div class="choice-desc">Elite difficulty for interview warriors</div>
+            <div class="diff-xp">+50 XP / question</div>
+          </button>
+        </div>
+      </div>
+    </div>
 
-    <main class="grid">
-      <section class="panel account-panel">
-        <h2>Gamer</h2>
-        <p id="currentUser" class="panel-sub">Loading gamer...</p>
-        <div class="form-row">
-          <button id="logoutBtn" class="ghost" type="button">Log Out</button>
+    <!-- ==============================
+         VIEW: STEP 4 — QUESTION COUNT
+    ============================== -->
+    <div class="view" id="viewStep4">
+      <div class="view-inner wizard-view">
+        <div class="wizard-header">
+          <button class="btn-back" id="backFromStep4" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Back
+          </button>
+          <div class="wizard-meta">
+            <div class="wizard-step-label">Step 4 of 4</div>
+            <h2 class="wizard-title">How Many Questions?</h2>
+            <p class="wizard-sub">Set the length of this run.</p>
+          </div>
         </div>
-        <div id="accountStatus" class="status-message" aria-live="polite"></div>
-      </section>
 
-      <section class="panel">
-        <h2>Players</h2>
-        <div id="playersContainer" class="cards"></div>
-      </section>
+        <div class="count-selector-wrap">
+          <div class="run-summary" id="runSummary"></div>
 
-      <section class="panel game-panel">
-        <div class="game-header">
-          <h2>Game Arena</h2>
-          <span class="game-tag">Solo Run</span>
-        </div>
-        <div class="field">
-          <label for="selectedPlayer">Player</label>
-          <select id="selectedPlayer"></select>
-        </div>
-        <div class="field">
-          <label for="prepFieldSelect">Preparation Field</label>
-          <select id="prepFieldSelect">
-            <option value="OOP">OOP</option>
-            <option value="DSA">DSA</option>
-            <option value="OPERATING_SYSTEM">Operating System</option>
-            <option value="DBMS">DBMS</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="topicSelect">Topic</label>
-          <select id="topicSelect"></select>
-        </div>
-        <div class="field">
-          <label for="difficultySelect">Difficulty</label>
-          <select id="difficultySelect">
-            <option value="EASY">EASY</option>
-            <option value="MEDIUM">MEDIUM</option>
-            <option value="HARD">HARD</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="questionCount">Questions</label>
-          <input id="questionCount" type="number" min="1" max="20" value="5">
-        </div>
-        <button id="startGameBtn" type="button">Start Game</button>
-        <div id="gameError" class="status-message" aria-live="polite"></div>
+          <div class="count-selector">
+            <button class="count-btn" id="countMinus" type="button">−</button>
+            <div class="count-display">
+              <span id="questionCountDisplay">5</span>
+              <span class="count-label">questions</span>
+            </div>
+            <button class="count-btn" id="countPlus" type="button">+</button>
+          </div>
 
-        <div id="gameArea" class="game-area">
-          <p class="hint">Select a player and launch a run to see questions.</p>
+          <div class="count-presets">
+            <span class="preset-label">Quick pick:</span>
+            <button class="preset-btn" data-count="5" type="button">5</button>
+            <button class="preset-btn" data-count="10" type="button">10</button>
+            <button class="preset-btn" data-count="15" type="button">15</button>
+            <button class="preset-btn" data-count="20" type="button">20</button>
+          </div>
+
+          <button id="launchRunBtn" class="btn-primary btn-launch" type="button">
+            <span>Launch Run</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+          <div id="launchError" class="error-msg" aria-live="polite"></div>
         </div>
-        <div id="gameResult" class="game-result"></div>
-      </section>
-    </main>
-  </div>
+      </div>
+    </div>
+
+    <!-- ==============================
+         VIEW: GAME (Questions)
+    ============================== -->
+    <div class="view" id="viewGame">
+      <div class="view-inner">
+        <div class="game-topbar">
+          <div class="game-meta" id="gameMeta">Field • Topic</div>
+          <div class="question-progress">
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" id="progressFill"></div>
+            </div>
+            <span id="progressLabel">1 / 5</span>
+          </div>
+          <div class="diff-badge" id="diffBadge">EASY</div>
+        </div>
+
+        <div class="question-card" id="questionCard">
+          <div class="qnum" id="qNum">Question 1</div>
+          <div class="qtext" id="qText">Loading…</div>
+          <div class="option-list" id="optionsContainer"></div>
+          <div class="game-actions">
+            <div id="gameError" class="error-msg" aria-live="polite"></div>
+            <button id="nextQuestionBtn" class="btn-primary" type="button">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================
+         VIEW: RESULTS
+    ============================== -->
+    <div class="view" id="viewResults">
+      <div class="view-inner">
+        <div class="results-card" id="resultsCard">
+          <div class="results-glow"></div>
+          <div class="results-icon" id="resultsIcon">🏆</div>
+          <h2 class="results-title">Run Complete!</h2>
+          <div class="results-score" id="resultsScore">0%</div>
+
+          <div class="results-stats" id="resultsStats"></div>
+
+          <div class="results-actions">
+            <button id="playAgainBtn" class="btn-primary" type="button">Play Again</button>
+            <button id="goLobbyBtn" class="btn-ghost" type="button">Back to Lobby</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /views-container -->
 
   <script src="app.js"></script>
 </body>
