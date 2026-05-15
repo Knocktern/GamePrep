@@ -1,11 +1,11 @@
 const API_BASE = "http://localhost:8080/api";
 
 const playersContainer = document.getElementById("playersContainer");
-const usernameInput = document.getElementById("username");
-const createBtn = document.getElementById("createBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const accountStatus = document.getElementById("accountStatus");
+const currentUserLabel = document.getElementById("currentUser");
 const totalPlayersLabel = document.getElementById("totalPlayersLabel");
 const topLevelLabel = document.getElementById("topLevelLabel");
-const statusMessage = document.getElementById("statusMessage");
 const selectedPlayer = document.getElementById("selectedPlayer");
 const difficultySelect = document.getElementById("difficultySelect");
 const questionCountInput = document.getElementById("questionCount");
@@ -19,6 +19,8 @@ let currentSessionId = null;
 let currentQuestions = [];
 let currentQuestionIndex = 0;
 let currentAnswers = new Map();
+let currentUser = null;
+const TOKEN_KEY = "gameprep_token";
 
 async function readErrorMessage(response, fallback) {
   const contentType = response.headers.get("content-type") || "";
@@ -53,22 +55,77 @@ function updateStats(players) {
   }
 }
 
-function showStatusMessage(message, isError = false) {
-  if (!statusMessage) {
+function showAccountMessage(message, isError = false) {
+  if (!accountStatus) {
     return;
   }
-  statusMessage.textContent = message;
-  statusMessage.classList.toggle("error", isError);
-  statusMessage.classList.add("visible");
+  accountStatus.textContent = message;
+  accountStatus.classList.toggle("error", isError);
+  accountStatus.classList.add("visible");
 
   if (statusTimeoutId) {
     clearTimeout(statusTimeoutId);
   }
 
   statusTimeoutId = setTimeout(() => {
-    statusMessage.classList.remove("visible");
-    statusMessage.classList.remove("error");
+    accountStatus.classList.remove("visible");
+    accountStatus.classList.remove("error");
   }, 2000);
+}
+
+function getToken() {
+  return localStorage.getItem(TOKEN_KEY) || "";
+}
+
+function authHeaders() {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+function setCurrentUser(user) {
+  currentUser = user;
+  if (currentUserLabel) {
+    currentUserLabel.textContent = user
+      ? `Logged in as ${user.username} (Level ${user.level})`
+      : "Not logged in.";
+  }
+  if (logoutBtn) {
+    logoutBtn.disabled = !user;
+  }
+  if (selectedPlayer) {
+    selectedPlayer.disabled = Boolean(user);
+    if (user) {
+      selectedPlayer.value = String(user.id);
+    }
+  }
+}
+
+async function loadCurrentUser() {
+  const token = getToken();
+  if (!token) {
+    redirectToLogin();
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/auth/me`, {
+      headers: {
+        ...authHeaders(),
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Unauthorized");
+    }
+    const user = await response.json();
+    setCurrentUser(user);
+  } catch (error) {
+    localStorage.removeItem(TOKEN_KEY);
+    redirectToLogin();
+  }
+}
+
+function redirectToLogin() {
+  window.location.href = "login.html";
 }
 
 async function fetchPlayers() {
@@ -88,6 +145,12 @@ async function fetchPlayers() {
         })
       : [];
     populatePlayerSelect(sortedPlayers);
+    if (currentUser) {
+      const updated = sortedPlayers.find((player) => player.id === currentUser.id);
+      if (updated) {
+        setCurrentUser(updated);
+      }
+    }
     updateStats(sortedPlayers);
     renderPlayers(sortedPlayers);
   } catch (error) {
@@ -100,7 +163,7 @@ async function fetchPlayers() {
 
 function renderPlayers(players) {
   if (!Array.isArray(players) || players.length === 0) {
-    playersContainer.innerHTML = "<div class=\"empty\">No players yet. Create one to start the grind.</div>";
+    playersContainer.innerHTML = "<div class=\"empty\">No players yet.</div>";
     return;
   }
 
@@ -138,45 +201,27 @@ function populatePlayerSelect(players) {
     })
     .join("");
 
-  if (previousValue && players.some((player) => String(player.id) === previousValue)) {
+  if (currentUser) {
+    selectedPlayer.value = String(currentUser.id);
+  } else if (previousValue && players.some((player) => String(player.id) === previousValue)) {
     selectedPlayer.value = previousValue;
   }
 }
 
-async function createPlayer() {
-  const username = usernameInput.value.trim();
-  if (!username) {
-    usernameInput.focus();
-    return;
-  }
-
-  createBtn.disabled = true;
+async function logout() {
   try {
-    const response = await fetch(`${API_BASE}/players`, {
+    await fetch(`${API_BASE}/auth/logout`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        ...authHeaders(),
       },
-      body: JSON.stringify({
-        username,
-        level: 1,
-        xp: 0,
-      }),
     });
-
-    if (!response.ok) {
-      throw new Error(`Failed to create player: ${response.status}`);
-    }
-
-    usernameInput.value = "";
-    showStatusMessage("Player created!");
-    await fetchPlayers();
   } catch (error) {
     console.error(error);
-    showStatusMessage("Could not create player.", true);
-  } finally {
-    createBtn.disabled = false;
   }
+  localStorage.removeItem(TOKEN_KEY);
+  showAccountMessage("Logged out.");
+  redirectToLogin();
 }
 
 function showGameMessage(message, isError = false) {
@@ -194,12 +239,12 @@ function showGameMessage(message, isError = false) {
 }
 
 async function startGame() {
-  const playerId = selectedPlayer ? selectedPlayer.value : "";
+  const playerId = currentUser ? currentUser.id : (selectedPlayer ? selectedPlayer.value : "");
   const difficulty = difficultySelect ? difficultySelect.value : "EASY";
   const numberOfQuestions = Number.parseInt(questionCountInput.value, 10);
 
   if (!playerId) {
-    showGameMessage("Select a player first.", true);
+    showGameMessage("Log in to start a game.", true);
     return;
   }
 
@@ -216,6 +261,7 @@ async function startGame() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...authHeaders(),
       },
       body: JSON.stringify({
         playerId: Number(playerId),
@@ -338,7 +384,8 @@ function handleNext(question) {
 }
 
 async function submitGame() {
-  if (!currentSessionId || !selectedPlayer.value) {
+  const playerId = currentUser ? currentUser.id : selectedPlayer.value;
+  if (!currentSessionId || !playerId) {
     showGameMessage("No active session.", true);
     return;
   }
@@ -353,10 +400,11 @@ async function submitGame() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...authHeaders(),
       },
       body: JSON.stringify({
         sessionId: currentSessionId,
-        playerId: Number(selectedPlayer.value),
+        playerId: Number(playerId),
         answers,
       }),
     });
@@ -380,6 +428,13 @@ async function submitGame() {
   }
 }
 
-createBtn.addEventListener("click", createPlayer);
-startGameBtn.addEventListener("click", startGame);
-window.addEventListener("DOMContentLoaded", fetchPlayers);
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", logout);
+}
+if (startGameBtn) {
+  startGameBtn.addEventListener("click", startGame);
+}
+window.addEventListener("DOMContentLoaded", () => {
+  setCurrentUser(null);
+  loadCurrentUser().then(fetchPlayers);
+});

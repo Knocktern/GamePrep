@@ -24,6 +24,12 @@ public class Player {
     @Column(nullable = false)
     private int xp = 0;
 
+    @Column(name = "password_hash", length = 60)
+    private String passwordHash;
+
+    @Column(name = "auth_token", length = 64)
+    private String authToken;
+
     public Player() {
     }
 
@@ -63,5 +69,21 @@ public class Player {
 
     public void setXp(int xp) {
         this.xp = xp;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 }

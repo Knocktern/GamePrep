@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GamePrep Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="login">
+  <div class="scanlines"></div>
+  <div class="wrap">
+    <div class="top-bar">
+      <div class="logo">GamePrep</div>
+      <div class="top-bar-tag">Login</div>
+    </div>
+
+    <section class="panel">
+      <h2>Log In</h2>
+      <p class="panel-sub">Enter your gamer credentials.</p>
+      <div class="form-row">
+        <input id="username" type="text" maxlength="50" placeholder="Username">
+        <input id="password" type="password" placeholder="Password">
+      </div>
+      <button id="loginBtn" type="button">Log In</button>
+      <div id="authMessage" class="status-message" aria-live="polite"></div>
+      <p class="hint">No account yet? <a href="signup.html">Create one</a>.</p>
+    </section>
+  </div>
+
+  <script src="auth.js"></script>
+</body>
+</html>

@@ -35,15 +35,13 @@
     </section>
 
     <main class="grid">
-      <section class="panel">
-        <h2>Create Player</h2>
-        <p class="panel-sub">Spawn a new contender for the leaderboard.</p>
+      <section class="panel account-panel">
+        <h2>Gamer</h2>
+        <p id="currentUser" class="panel-sub">Loading gamer...</p>
         <div class="form-row">
-          <input id="username" type="text" maxlength="50" placeholder="Enter username">
-          <button id="createBtn" type="button">Create</button>
+          <button id="logoutBtn" class="ghost" type="button">Log Out</button>
         </div>
-        <p class="hint">Players start at level 1 with 0 XP.</p>
-        <div id="statusMessage" class="status-message" aria-live="polite"></div>
+        <div id="accountStatus" class="status-message" aria-live="polite"></div>
       </section>
 
       <section class="panel">
