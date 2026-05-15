@@ -81,14 +81,23 @@ public class SessionService {
         if (request == null || request.getPlayerId() == null) {
             throw new RuntimeException("playerId is required");
         }
+        if (request.getPrepField() == null || request.getPrepField().isBlank()) {
+            throw new RuntimeException("prepField is required");
+        }
+        if (request.getTopic() == null || request.getTopic().isBlank()) {
+            throw new RuntimeException("topic is required");
+        }
+        if (request.getDifficulty() == null || request.getDifficulty().isBlank()) {
+            throw new RuntimeException("difficulty is required");
+        }
         if (request.getNumberOfQuestions() <= 0) {
             throw new RuntimeException("numberOfQuestions must be greater than 0");
         }
         Player player = playerRepository.findById(request.getPlayerId())
                 .orElseThrow(() -> new RuntimeException("Player not found"));
 
-        List<Question> questions = questionService.getRandomQuestionsByDifficulty(
-                request.getDifficulty(), request.getNumberOfQuestions());
+        List<Question> questions = questionService.getRandomQuestionsByTopic(
+            request.getDifficulty(), request.getPrepField(), request.getTopic(), request.getNumberOfQuestions());
         int totalQuestions = Math.min(request.getNumberOfQuestions(), questions.size());
 
         Session session = new Session();
@@ -177,6 +186,8 @@ public class SessionService {
                 question.getDescription(),
                 question.getType(),
                 question.getDifficulty(),
+                question.getPrepField(),
+                question.getTopic(),
                 parseOptions(question.getOptionsJson())
         );
     }

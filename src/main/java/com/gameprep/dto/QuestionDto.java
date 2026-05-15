@@ -7,16 +7,20 @@ public class QuestionDto {
     private String description;
     private String type;
     private String difficulty;
+    private String prepField;
+    private String topic;
 
     public QuestionDto() {
     }
 
-    public QuestionDto(Long id, String title, String description, String type, String difficulty) {
+    public QuestionDto(Long id, String title, String description, String type, String difficulty, String prepField, String topic) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.type = type;
         this.difficulty = difficulty;
+        this.prepField = prepField;
+        this.topic = topic;
     }
 
     public Long getId() {
@@ -57,5 +61,21 @@ public class QuestionDto {
 
     public void setDifficulty(String difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public String getPrepField() {
+        return prepField;
+    }
+
+    public void setPrepField(String prepField) {
+        this.prepField = prepField;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 }

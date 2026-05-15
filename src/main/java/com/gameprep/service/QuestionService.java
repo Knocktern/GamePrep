@@ -40,4 +40,13 @@ public class QuestionService {
     public List<Question> getRandomQuestionsByDifficulty(String difficulty, int limit) {
         return questionRepository.findRandomByDifficulty(difficulty, PageRequest.of(0, limit));
     }
+
+    public List<Question> getRandomQuestionsByTopic(String difficulty, String prepField, String topic, int limit) {
+        if (topic == null || topic.isBlank()) {
+            return questionRepository.findRandomByDifficultyAndPrepField(
+                    difficulty, prepField, PageRequest.of(0, limit));
+        }
+        return questionRepository.findRandomByDifficultyAndPrepFieldAndTopic(
+                difficulty, prepField, topic, PageRequest.of(0, limit));
+    }
 }

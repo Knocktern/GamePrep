@@ -16,7 +16,9 @@ public class QuestionMapper {
                 entity.getTitle(),
                 entity.getDescription(),
                 entity.getType(),
-                entity.getDifficulty()
+            entity.getDifficulty(),
+            entity.getPrepField(),
+            entity.getTopic()
         );
     }
 
@@ -30,6 +32,8 @@ public class QuestionMapper {
         question.setDescription(dto.getDescription());
         question.setType(dto.getType());
         question.setDifficulty(dto.getDifficulty());
+        question.setPrepField(dto.getPrepField());
+        question.setTopic(dto.getTopic());
         return question;
     }
 }

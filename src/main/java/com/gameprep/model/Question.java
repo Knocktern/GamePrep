@@ -28,6 +28,12 @@ public class Question {
     @Column(length = 20)
     private String difficulty;
 
+    @Column(name = "prep_field", length = 50, nullable = false)
+    private String prepField;
+
+    @Column(length = 80, nullable = false)
+    private String topic;
+
     @Lob
     private String optionsJson;
 
@@ -37,11 +43,14 @@ public class Question {
     public Question() {
     }
 
-    public Question(String title, String description, String type, String difficulty, String optionsJson, String correctAnswer) {
+    public Question(String title, String description, String type, String difficulty, String prepField, String topic,
+                    String optionsJson, String correctAnswer) {
         this.title = title;
         this.description = description;
         this.type = type;
         this.difficulty = difficulty;
+        this.prepField = prepField;
+        this.topic = topic;
         this.optionsJson = optionsJson;
         this.correctAnswer = correctAnswer;
     }
@@ -84,6 +93,22 @@ public class Question {
 
     public void setDifficulty(String difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public String getPrepField() {
+        return prepField;
+    }
+
+    public void setPrepField(String prepField) {
+        this.prepField = prepField;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 
     public String getOptionsJson() {

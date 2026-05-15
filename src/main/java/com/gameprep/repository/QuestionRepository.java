@@ -12,4 +12,17 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     @Query(value = "SELECT * FROM questions WHERE difficulty = :difficulty ORDER BY RAND()", nativeQuery = true)
     List<Question> findRandomByDifficulty(@Param("difficulty") String difficulty, Pageable pageable);
+
+        @Query(value = "SELECT * FROM questions WHERE difficulty = :difficulty AND prep_field = :prepField ORDER BY RAND()",
+            nativeQuery = true)
+        List<Question> findRandomByDifficultyAndPrepField(@Param("difficulty") String difficulty,
+                                  @Param("prepField") String prepField,
+                                  Pageable pageable);
+
+        @Query(value = "SELECT * FROM questions WHERE difficulty = :difficulty AND prep_field = :prepField AND topic = :topic ORDER BY RAND()",
+            nativeQuery = true)
+        List<Question> findRandomByDifficultyAndPrepFieldAndTopic(@Param("difficulty") String difficulty,
+                                      @Param("prepField") String prepField,
+                                      @Param("topic") String topic,
+                                      Pageable pageable);
 }

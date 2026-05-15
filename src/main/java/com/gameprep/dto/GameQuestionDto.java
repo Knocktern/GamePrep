@@ -9,17 +9,22 @@ public class GameQuestionDto {
     private String description;
     private String type;
     private String difficulty;
+    private String prepField;
+    private String topic;
     private List<String> options;
 
     public GameQuestionDto() {
     }
 
-    public GameQuestionDto(Long id, String title, String description, String type, String difficulty, List<String> options) {
+    public GameQuestionDto(Long id, String title, String description, String type, String difficulty,
+                           String prepField, String topic, List<String> options) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.type = type;
         this.difficulty = difficulty;
+        this.prepField = prepField;
+        this.topic = topic;
         this.options = options;
     }
 
@@ -61,6 +66,22 @@ public class GameQuestionDto {
 
     public void setDifficulty(String difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public String getPrepField() {
+        return prepField;
+    }
+
+    public void setPrepField(String prepField) {
+        this.prepField = prepField;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 
     public List<String> getOptions() {

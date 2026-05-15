@@ -7,6 +7,8 @@ const currentUserLabel = document.getElementById("currentUser");
 const totalPlayersLabel = document.getElementById("totalPlayersLabel");
 const topLevelLabel = document.getElementById("topLevelLabel");
 const selectedPlayer = document.getElementById("selectedPlayer");
+const prepFieldSelect = document.getElementById("prepFieldSelect");
+const topicSelect = document.getElementById("topicSelect");
 const difficultySelect = document.getElementById("difficultySelect");
 const questionCountInput = document.getElementById("questionCount");
 const startGameBtn = document.getElementById("startGameBtn");
@@ -21,6 +23,12 @@ let currentQuestionIndex = 0;
 let currentAnswers = new Map();
 let currentUser = null;
 const TOKEN_KEY = "gameprep_token";
+const TOPIC_MAP = {
+  OOP: ["Classes", "Inheritance", "Polymorphism", "Encapsulation"],
+  DSA: ["Arrays", "Linked List", "Stack", "Queue", "Tree", "Graph"],
+  OPERATING_SYSTEM: ["Bash Script", "Process", "Thread", "Memory Management"],
+  DBMS: ["SQL Basics", "Normalization", "Indexing", "Transactions"],
+};
 
 async function readErrorMessage(response, fallback) {
   const contentType = response.headers.get("content-type") || "";
@@ -98,6 +106,17 @@ function setCurrentUser(user) {
       selectedPlayer.value = String(user.id);
     }
   }
+}
+
+function populateTopics() {
+  if (!prepFieldSelect || !topicSelect) {
+    return;
+  }
+  const field = prepFieldSelect.value || "OOP";
+  const topics = TOPIC_MAP[field] || [];
+  topicSelect.innerHTML = topics
+    .map((topic) => `<option value="${topic}">${topic}</option>`)
+    .join("");
 }
 
 async function loadCurrentUser() {
@@ -240,6 +259,8 @@ function showGameMessage(message, isError = false) {
 
 async function startGame() {
   const playerId = currentUser ? currentUser.id : (selectedPlayer ? selectedPlayer.value : "");
+  const prepField = prepFieldSelect ? prepFieldSelect.value : "";
+  const topic = topicSelect ? topicSelect.value : "";
   const difficulty = difficultySelect ? difficultySelect.value : "EASY";
   const numberOfQuestions = Number.parseInt(questionCountInput.value, 10);
 
@@ -250,6 +271,11 @@ async function startGame() {
 
   if (!Number.isFinite(numberOfQuestions) || numberOfQuestions < 1) {
     showGameMessage("Choose at least 1 question.", true);
+    return;
+  }
+
+  if (!prepField || !topic) {
+    showGameMessage("Select a preparation field and topic.", true);
     return;
   }
 
@@ -265,6 +291,8 @@ async function startGame() {
       },
       body: JSON.stringify({
         playerId: Number(playerId),
+        prepField,
+        topic,
         difficulty,
         numberOfQuestions,
       }),
@@ -436,5 +464,9 @@ if (startGameBtn) {
 }
 window.addEventListener("DOMContentLoaded", () => {
   setCurrentUser(null);
+  populateTopics();
+  if (prepFieldSelect) {
+    prepFieldSelect.addEventListener("change", populateTopics);
+  }
   loadCurrentUser().then(fetchPlayers);
 });
