@@ -7,14 +7,21 @@ public class StartGameResponseDto {
     private Long sessionId;
     private Long playerId;
     private List<GameQuestionDto> questions;
+    private int currentHealth;
+    private int maxHealth;
+    private String status;
 
     public StartGameResponseDto() {
     }
 
-    public StartGameResponseDto(Long sessionId, Long playerId, List<GameQuestionDto> questions) {
+    public StartGameResponseDto(Long sessionId, Long playerId, List<GameQuestionDto> questions,
+                                int currentHealth, int maxHealth, String status) {
         this.sessionId = sessionId;
         this.playerId = playerId;
         this.questions = questions;
+        this.currentHealth = currentHealth;
+        this.maxHealth = maxHealth;
+        this.status = status;
     }
 
     public Long getSessionId() {
@@ -39,5 +46,29 @@ public class StartGameResponseDto {
 
     public void setQuestions(List<GameQuestionDto> questions) {
         this.questions = questions;
+    }
+
+    public int getCurrentHealth() {
+        return currentHealth;
+    }
+
+    public void setCurrentHealth(int currentHealth) {
+        this.currentHealth = currentHealth;
+    }
+
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
+    public void setMaxHealth(int maxHealth) {
+        this.maxHealth = maxHealth;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

@@ -16,6 +16,19 @@
   --shadow:       rgba(0, 0, 0, 0.4);
 }
 
+body.light-mode {
+  --bg-1:         #f0f4f8;
+  --bg-2:         #e2e8f0;
+  --panel:        rgba(255, 255, 255, 0.85);
+  --panel-border: rgba(0, 102, 204, 0.25);
+  --text:         #1a202c;
+  --muted:        #4a5568;
+  --accent:       #0d9488;
+  --accent-2:     #ca8a04;
+  --danger:       #e11d48;
+  --shadow:       rgba(0, 0, 0, 0.1);
+}
+
 * { box-sizing: border-box; }
 
 body {
@@ -45,6 +58,16 @@ body {
   mix-blend-mode: soft-light;
   opacity: 0.6;
   z-index: 0;
+}
+
+body.light-mode .scanlines {
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(0,0,0,0.03),
+    rgba(0,0,0,0.03) 1px,
+    rgba(255,255,255,0) 2px,
+    rgba(255,255,255,0) 6px
+  );
 }
 
 /* =====================================================

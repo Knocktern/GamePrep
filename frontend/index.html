@@ -35,6 +35,7 @@
         <div class="chip-avatar" id="chipAvatar">?</div>
         <span id="chipName">Loading…</span>
       </div>
+      <button id="themeToggleBtn" class="btn-ghost btn-sm" type="button" title="Toggle Light/Dark Mode">☀️</button>
       <button id="logoutBtn" class="btn-ghost btn-sm" type="button">Log Out</button>
     </div>
   </nav>
@@ -135,11 +136,11 @@
           </button>
           <div class="wizard-meta">
             <div class="wizard-step-label">Step 2 of 4</div>
-            <h2 class="wizard-title">Pick a Topic</h2>
-            <p class="wizard-sub">Select the specific concept to drill.</p>
+            <h2 class="wizard-title">Chart Your Path</h2>
+            <p class="wizard-sub">Only unlocked nodes can be explored. Clear one to reveal the next.</p>
           </div>
         </div>
-        <div class="choice-grid topic-grid" id="topicGrid"></div>
+        <div class="topic-map" id="topicMap"></div>
       </div>
     </div>
 
@@ -241,6 +242,7 @@
             </div>
             <span id="progressLabel">1 / 5</span>
           </div>
+          <div class="health-bar" id="healthBar" aria-label="Health"></div>
           <div class="diff-badge" id="diffBadge">EASY</div>
         </div>
 
@@ -249,6 +251,7 @@
           <div class="qtext" id="qText">Loading…</div>
           <div class="option-list" id="optionsContainer"></div>
           <div class="game-actions">
+            <div id="answerFeedback" class="feedback-msg" aria-live="polite"></div>
             <div id="gameError" class="error-msg" aria-live="polite"></div>
             <button id="nextQuestionBtn" class="btn-primary" type="button">Next</button>
           </div>
@@ -264,7 +267,7 @@
         <div class="results-card" id="resultsCard">
           <div class="results-glow"></div>
           <div class="results-icon" id="resultsIcon">🏆</div>
-          <h2 class="results-title">Run Complete!</h2>
+          <h2 class="results-title" id="resultsTitle">Run Complete!</h2>
           <div class="results-score" id="resultsScore">0%</div>
 
           <div class="results-stats" id="resultsStats"></div>

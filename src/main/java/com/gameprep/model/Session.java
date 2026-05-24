@@ -37,10 +37,26 @@ public class Session {
     @Column(nullable = false)
     private int correctAnswers;
 
+    @Column(name = "current_health")
+    private int currentHealth;
+
+    @Column(length = 20)
+    private String status;
+
+    @Column(name = "prep_field", length = 50)
+    private String prepField;
+
+    @Column(length = 80)
+    private String topic;
+
+    @Column(name = "answered_questions")
+    private int answeredQuestions;
+
     public Session() {
     }
 
-    public Session(Player player, LocalDateTime startedAt, LocalDateTime endedAt, int score, int totalQuestions, int correctAnswers) {
+    public Session(Player player, LocalDateTime startedAt, LocalDateTime endedAt, int score, int totalQuestions,
+                   int correctAnswers) {
         this.player = player;
         this.startedAt = startedAt;
         this.endedAt = endedAt;
@@ -103,5 +119,45 @@ public class Session {
 
     public void setCorrectAnswers(int correctAnswers) {
         this.correctAnswers = correctAnswers;
+    }
+
+    public int getCurrentHealth() {
+        return currentHealth;
+    }
+
+    public void setCurrentHealth(int currentHealth) {
+        this.currentHealth = currentHealth;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getPrepField() {
+        return prepField;
+    }
+
+    public void setPrepField(String prepField) {
+        this.prepField = prepField;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    public int getAnsweredQuestions() {
+        return answeredQuestions;
+    }
+
+    public void setAnsweredQuestions(int answeredQuestions) {
+        this.answeredQuestions = answeredQuestions;
     }
 }

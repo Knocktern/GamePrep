@@ -22,7 +22,11 @@ let questionCount        = 5;
 let currentSessionId     = null;
 let currentQuestions     = [];
 let currentQuestionIndex = 0;
-let currentAnswers       = new Map();
+let progressByField       = new Map();
+let progressLoaded        = false;
+let currentHealth         = 0;
+let maxHealth             = 0;
+let isSubmittingAnswer    = false;
 
 /* ── DOM refs ── */
 const $ = id => document.getElementById(id);
@@ -155,6 +159,41 @@ function updatePlayerChip(user) {
 }
 
 /* =====================================================
+   LOAD PLAYER PROGRESS
+   ===================================================== */
+function buildProgressMap(items) {
+  const map = new Map();
+  (items || []).forEach(item => {
+    const field = item?.prepField;
+    const topic = item?.topic;
+    if (!field || !topic) return;
+    if (!map.has(field)) {
+      map.set(field, { unlocked: new Set(), cleared: new Set() });
+    }
+    const entry = map.get(field);
+    entry.unlocked.add(topic);
+    if (item.cleared) entry.cleared.add(topic);
+  });
+  return map;
+}
+
+async function loadPlayerProgress() {
+  const token = getToken();
+  if (!token) return;
+  progressLoaded = false;
+  try {
+    const res = await fetch(`${API_BASE}/players/me/progress`, { headers: authHeaders() });
+    if (!res.ok) throw new Error(`Progress load failed: ${res.status}`);
+    const data = await res.json();
+    progressByField = buildProgressMap(Array.isArray(data) ? data : []);
+  } catch {
+    progressByField = new Map();
+  } finally {
+    progressLoaded = true;
+  }
+}
+
+/* =====================================================
    LOGOUT
    ===================================================== */
 async function logout() {
@@ -230,9 +269,12 @@ function initStep1() {
   const grid = $("fieldGrid");
   if (!grid) return;
   grid.querySelectorAll(".choice-card").forEach(card => {
-    card.addEventListener("click", () => {
+    card.addEventListener("click", async () => {
       selectedField = card.dataset.value;
-      buildTopicGrid(selectedField);
+      if (!progressLoaded) {
+        await loadPlayerProgress();
+      }
+      buildTopicMap(selectedField);
       showView("viewStep2");
     });
   });
@@ -242,17 +284,33 @@ function initStep1() {
 /* =====================================================
    STEP 2 — TOPIC SELECTION
    ===================================================== */
-function buildTopicGrid(field) {
-  const grid   = $("topicGrid");
+function buildTopicMap(field) {
+  const grid = $("topicMap");
   if (!grid) return;
   const topics = TOPIC_MAP[field] ?? [];
-  const icons  = ["📌","🔗","📦","🔄","🌳","🗂️","⚙️","💾"];
-  grid.innerHTML = topics.map((topic, i) => `
-    <button class="choice-card" data-value="${topic}" type="button">
-      <div class="choice-icon">${icons[i % icons.length]}</div>
-      <div class="choice-name">${topic}</div>
-    </button>`).join("");
-  grid.querySelectorAll(".choice-card").forEach(card => {
+  const progress = progressByField.get(field);
+  const unlocked = progress?.unlocked ?? new Set();
+  const cleared  = progress?.cleared ?? new Set();
+
+  grid.innerHTML = topics.map((topic, i) => {
+    const isUnlocked = unlocked.has(topic);
+    const isCleared = cleared.has(topic);
+    const statusLabel = isUnlocked ? (isCleared ? "Cleared" : "Unlocked") : "Locked";
+    const statusIcon  = isUnlocked ? (isCleared ? "✅" : "🧭") : "🔒";
+    return `
+      <button class="map-node ${isUnlocked ? "unlocked" : "locked"} ${isCleared ? "cleared" : ""}"
+              data-value="${topic}" type="button" ${isUnlocked ? "" : "disabled"}>
+        <div class="node-index">${i + 1}</div>
+        <div class="node-body">
+          <div class="node-title">${topic}</div>
+          <div class="node-status">${statusLabel}</div>
+        </div>
+        <div class="node-icon">${statusIcon}</div>
+      </button>`;
+  }).join("");
+
+  grid.querySelectorAll(".map-node").forEach(card => {
+    if (card.disabled) return;
     card.addEventListener("click", () => {
       selectedTopic = card.dataset.value;
       showView("viewStep3");
@@ -368,7 +426,8 @@ async function startGame() {
     currentSessionId     = payload.sessionId;
     currentQuestions     = Array.isArray(payload.questions) ? payload.questions : [];
     currentQuestionIndex = 0;
-    currentAnswers       = new Map();
+    currentHealth        = Number(payload.currentHealth ?? payload.maxHealth ?? 3);
+    maxHealth            = Number(payload.maxHealth ?? currentHealth ?? 3);
 
     if (!currentQuestions.length) {
       showLaunchError("No questions found for this selection. Try a different difficulty or topic.");
@@ -398,15 +457,31 @@ function initGameView() {
     badge.className   = "diff-badge " + (selectedDifficulty ?? "EASY").toLowerCase();
   }
 
+  setProgress(0, currentQuestions.length);
+  renderHealth();
+
   renderQuestion();
 }
 
-function setProgress(index, total) {
+function setProgress(answered, total) {
   const fill  = $("progressFill");
   const label = $("progressLabel");
-  const pct   = total ? ((index / total) * 100).toFixed(1) : 0;
+  const pct   = total ? ((answered / total) * 100).toFixed(1) : 0;
   if (fill)  fill.style.width   = `${pct}%`;
-  if (label) label.textContent  = `${index} / ${total}`;
+  if (label) label.textContent  = `${answered} / ${total}`;
+}
+
+function renderHealth() {
+  const bar = $("healthBar");
+  if (!bar) return;
+  const total = Math.max(maxHealth, currentHealth, 0);
+  bar.innerHTML = "";
+  for (let i = 0; i < total; i++) {
+    const heart = document.createElement("span");
+    heart.className = "heart" + (i < currentHealth ? "" : " empty");
+    heart.textContent = "❤️";
+    bar.appendChild(heart);
+  }
 }
 
 function renderQuestion() {
@@ -415,9 +490,8 @@ function renderQuestion() {
   const q      = currentQuestions[currentQuestionIndex];
   const num    = currentQuestionIndex + 1;
   const total  = currentQuestions.length;
-  const isLast = num === total;
 
-  setProgress(num - 1, total);
+  setProgress(currentQuestionIndex, total);
 
   const qNum = $("qNum");
   const qText = $("qText");
@@ -428,28 +502,25 @@ function renderQuestion() {
   if (qText) qText.textContent = q.description || q.title || "—";
 
   // ---- Always update the button label first ----
+  clearAnswerFeedback();
   if (nxt) {
-    nxt.textContent = isLast ? "Submit Run" : "Next →";
-    // Use onclick so there's only ever ONE handler, no stale listeners
-    nxt.onclick = () => handleNext(q);
+    nxt.textContent = "Submit Answer";
+    nxt.onclick = null;
+    nxt.classList.add("hidden");
   }
 
   if (opts) {
     opts.innerHTML = "";
     const options = Array.isArray(q.options) ? q.options : [];
-    const saved   = currentAnswers.get(q.id);
 
     if (options.length) {
       options.forEach(opt => {
         const btn = document.createElement("button");
         btn.type         = "button";
-        btn.className    = "option-btn" + (saved === opt ? " selected" : "");
+        btn.className    = "option-btn";
         btn.textContent  = opt;
         btn.dataset.value = opt;
-        btn.addEventListener("click", () => {
-          opts.querySelectorAll(".option-btn").forEach(b => b.classList.remove("selected"));
-          btn.classList.add("selected");
-        });
+        btn.addEventListener("click", () => handleOptionAnswer(q, opt, btn));
         opts.appendChild(btn);
       });
     } else {
@@ -457,9 +528,15 @@ function renderQuestion() {
       inp.type        = "text";
       inp.id          = "freeAnswer";
       inp.placeholder = "Type your answer…";
-      inp.value       = saved ?? "";
+      inp.value       = "";
       inp.style.cssText = "width:100%;padding:12px 16px;border-radius:12px;border:1px solid rgba(61,242,198,0.3);background:rgba(255,255,255,0.06);color:var(--text);font-size:1rem;font-family:inherit;";
       opts.appendChild(inp);
+
+      if (nxt) {
+        nxt.textContent = "Submit Answer";
+        nxt.onclick = () => handleFreeTextSubmit(q);
+        nxt.classList.remove("hidden");
+      }
     }
   }
 }
@@ -472,51 +549,69 @@ function showGameError(msg) {
   setTimeout(() => el.classList.remove("visible"), 2500);
 }
 
-function handleNext(question) {
-  const options = Array.isArray(question.options) ? question.options : [];
-  let answer    = "";
-
-  if (options.length) {
-    const sel = $("optionsContainer")?.querySelector(".option-btn.selected");
-    if (!sel) { showGameError("Pick an answer to continue."); return; }
-    answer = sel.dataset.value;
-  } else {
-    const inp = $("freeAnswer");
-    answer = inp?.value.trim() ?? "";
-    if (!answer) { showGameError("Enter an answer to continue."); return; }
-  }
-
-  currentAnswers.set(question.id, answer);
-
-  if (currentQuestionIndex < currentQuestions.length - 1) {
-    currentQuestionIndex++;
-    renderQuestion();
-  } else {
-    setProgress(currentQuestions.length, currentQuestions.length);
-    submitGame();
-  }
+function clearAnswerFeedback() {
+  const el = $("answerFeedback");
+  if (!el) return;
+  el.textContent = "";
+  el.className = "feedback-msg";
 }
 
-/* =====================================================
-   SUBMIT GAME (API call — unchanged)
-   ===================================================== */
-async function submitGame() {
-  const playerId = currentUser?.id;
-  if (!currentSessionId || !playerId) { showGameError("No active session."); return; }
+function showAnswerFeedback(isCorrect, correctAnswer) {
+  const el = $("answerFeedback");
+  if (!el) return;
+  if (isCorrect) {
+    el.textContent = "Correct!";
+    el.className = "feedback-msg correct";
+    return;
+  }
+  const reveal = correctAnswer ? `Correct answer: ${correctAnswer}` : "Wrong answer";
+  el.textContent = reveal;
+  el.className = "feedback-msg wrong";
+}
 
-  const answers = currentQuestions.map(q => ({
-    questionId: q.id,
-    answer:     currentAnswers.get(q.id) ?? "",
-  }));
+function setAnswerInputsEnabled(enabled) {
+  document.querySelectorAll(".option-btn").forEach(btn => {
+    btn.disabled = !enabled;
+  });
+  const free = $("freeAnswer");
+  if (free) free.disabled = !enabled;
+  const nxt = $("nextQuestionBtn");
+  if (nxt) nxt.disabled = !enabled;
+}
+
+function handleOptionAnswer(question, answer, button) {
+  if (isSubmittingAnswer) return;
+  submitSingleAnswer(question, answer, button);
+}
+
+function handleFreeTextSubmit(question) {
+  if (isSubmittingAnswer) return;
+  const inp = $("freeAnswer");
+  const answer = inp?.value.trim() ?? "";
+  if (!answer) {
+    showGameError("Enter an answer to continue.");
+    return;
+  }
+  submitSingleAnswer(question, answer, null);
+}
+
+async function submitSingleAnswer(question, answer, selectedBtn) {
+  if (!currentSessionId || !currentUser?.id) {
+    showGameError("No active session.");
+    return;
+  }
+
+  isSubmittingAnswer = true;
+  setAnswerInputsEnabled(false);
 
   try {
-    const res = await fetch(`${API_BASE}/game/submit`, {
-      method:  "POST",
+    const res = await fetch(`${API_BASE}/game/answer`, {
+      method: "POST",
       headers: { "Content-Type": "application/json", ...authHeaders() },
-      body:    JSON.stringify({
+      body: JSON.stringify({
         sessionId: currentSessionId,
-        playerId:  Number(playerId),
-        answers,
+        questionId: question.id,
+        answer,
       }),
     });
 
@@ -526,17 +621,57 @@ async function submitGame() {
     }
 
     const result = await res.json();
-    showResults(result);
-    fetchPlayers(); // refresh leaderboard in background
+    const isCorrect = !!result.correct;
+    if (selectedBtn) {
+      selectedBtn.classList.add(isCorrect ? "correct" : "wrong");
+      if (!isCorrect && result.correctAnswer) {
+        const buttons = $("optionsContainer")?.querySelectorAll(".option-btn") || [];
+        buttons.forEach(btn => {
+          if (btn.dataset.value === result.correctAnswer) {
+            btn.classList.add("correct");
+          }
+        });
+      }
+    }
+
+    showAnswerFeedback(isCorrect, result.correctAnswer);
+    currentHealth = Number(result.currentHealth ?? currentHealth);
+    renderHealth();
+    setProgress(result.answeredQuestions ?? (currentQuestionIndex + 1), result.totalQuestions ?? currentQuestions.length);
+
+    if (result.sessionStatus === "FAILED") {
+      showResults(result.finalResult, "FAILED");
+      fetchPlayers();
+      await loadPlayerProgress();
+      isSubmittingAnswer = false;
+      return;
+    }
+    if (result.sessionStatus === "COMPLETED") {
+      showResults(result.finalResult, "COMPLETED");
+      fetchPlayers();
+      await loadPlayerProgress();
+      isSubmittingAnswer = false;
+      return;
+    }
+
+    currentQuestionIndex++;
+    setTimeout(() => {
+      renderQuestion();
+      setAnswerInputsEnabled(true);
+      isSubmittingAnswer = false;
+    }, 650);
   } catch (err) {
-    showGameError(err.message || "Could not submit game.");
+    showGameError(err.message || "Could not submit answer.");
+    setAnswerInputsEnabled(true);
+    isSubmittingAnswer = false;
   }
 }
 
 /* =====================================================
    RESULTS VIEW
    ===================================================== */
-function showResults(result) {
+function showResults(result, status = "COMPLETED") {
+  result = result || {};
   const score    = result.score            ?? 0;
   const correct  = result.correctAnswers   ?? 0;
   const total    = result.totalQuestions   ?? currentQuestions.length;
@@ -545,11 +680,16 @@ function showResults(result) {
   const newLevel = result.newLevel         ?? currentUser?.level ?? 0;
   const pct      = total ? Math.round((correct / total) * 100) : 0;
 
-  const icon = pct >= 80 ? "🏆" : pct >= 50 ? "⚡" : "💪";
+  const failed = status === "FAILED";
+  const icon = failed ? "💀" : (pct >= 80 ? "🏆" : pct >= 50 ? "⚡" : "💪");
   const ri   = $("resultsIcon");
   const rs   = $("resultsScore");
+  const rt   = $("resultsTitle");
+  const card = $("resultsCard");
   if (ri) ri.textContent = icon;
   if (rs) rs.textContent = `${pct}%`;
+  if (rt) rt.textContent = failed ? "You Died" : "Run Complete!";
+  if (card) card.classList.toggle("failed", failed);
 
   const statsEl = $("resultsStats");
   if (statsEl) {
@@ -572,23 +712,41 @@ function showResults(result) {
    LOBBY — "Start a Run" button
    ===================================================== */
 function initLobby() {
-  $("startRunBtn")?.addEventListener("click", () => {
+  const themeToggle = $("themeToggleBtn");
+  if (themeToggle) {
+    const isLight = localStorage.getItem("theme") === "light";
+    if (isLight) {
+      document.body.classList.add("light-mode");
+      themeToggle.textContent = "🌙";
+    }
+
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("light-mode");
+      const currentIsLight = document.body.classList.contains("light-mode");
+      localStorage.setItem("theme", currentIsLight ? "light" : "dark");
+      themeToggle.textContent = currentIsLight ? "🌙" : "☀️";
+    });
+  }
+
+  $("startRunBtn")?.addEventListener("click", async () => {
     // Reset wizard state
     selectedField = selectedTopic = selectedDifficulty = null;
     questionCount = 5;
     updateCountDisplay();
     // Deselect all cards
     document.querySelectorAll(".choice-card").forEach(c => c.classList.remove("selected"));
+    await loadPlayerProgress();
     showView("viewStep1");
   });
 
   $("logoutBtn")?.addEventListener("click", logout);
 
-  $("playAgainBtn")?.addEventListener("click", () => {
+  $("playAgainBtn")?.addEventListener("click", async () => {
     selectedField = selectedTopic = selectedDifficulty = null;
     questionCount = 5;
     updateCountDisplay();
     document.querySelectorAll(".choice-card").forEach(c => c.classList.remove("selected"));
+    await loadPlayerProgress();
     showView("viewStep1");
   });
 
@@ -618,5 +776,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   initStep4();
 
   await loadCurrentUser();
+  await loadPlayerProgress();
   await fetchPlayers();
 });

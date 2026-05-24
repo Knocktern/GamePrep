@@ -11,11 +11,18 @@ public class SessionDto {
     private int score;
     private int totalQuestions;
     private int correctAnswers;
+    private int currentHealth;
+    private String status;
+    private String prepField;
+    private String topic;
+    private int answeredQuestions;
 
     public SessionDto() {
     }
 
-    public SessionDto(Long id, Long playerId, LocalDateTime startedAt, LocalDateTime endedAt, int score, int totalQuestions, int correctAnswers) {
+    public SessionDto(Long id, Long playerId, LocalDateTime startedAt, LocalDateTime endedAt, int score,
+                      int totalQuestions, int correctAnswers, int currentHealth, String status, String prepField,
+                      String topic, int answeredQuestions) {
         this.id = id;
         this.playerId = playerId;
         this.startedAt = startedAt;
@@ -23,6 +30,11 @@ public class SessionDto {
         this.score = score;
         this.totalQuestions = totalQuestions;
         this.correctAnswers = correctAnswers;
+        this.currentHealth = currentHealth;
+        this.status = status;
+        this.prepField = prepField;
+        this.topic = topic;
+        this.answeredQuestions = answeredQuestions;
     }
 
     public Long getId() {
@@ -79,5 +91,45 @@ public class SessionDto {
 
     public void setCorrectAnswers(int correctAnswers) {
         this.correctAnswers = correctAnswers;
+    }
+
+    public int getCurrentHealth() {
+        return currentHealth;
+    }
+
+    public void setCurrentHealth(int currentHealth) {
+        this.currentHealth = currentHealth;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getPrepField() {
+        return prepField;
+    }
+
+    public void setPrepField(String prepField) {
+        this.prepField = prepField;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    public int getAnsweredQuestions() {
+        return answeredQuestions;
+    }
+
+    public void setAnsweredQuestions(int answeredQuestions) {
+        this.answeredQuestions = answeredQuestions;
     }
 }

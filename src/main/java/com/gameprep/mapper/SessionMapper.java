@@ -19,7 +19,12 @@ public class SessionMapper {
                 entity.getEndedAt(),
                 entity.getScore(),
                 entity.getTotalQuestions(),
-                entity.getCorrectAnswers()
+            entity.getCorrectAnswers(),
+            entity.getCurrentHealth(),
+            entity.getStatus(),
+            entity.getPrepField(),
+            entity.getTopic(),
+            entity.getAnsweredQuestions()
         );
     }
 }
