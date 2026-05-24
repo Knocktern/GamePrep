@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GamePrep | COMBAT ARENA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .arena-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    
+    /* HUD */
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--neon-blue);
+      padding-bottom: 1rem;
+    }
+    .hud-meta {
+      font-size: 1.2rem;
+      color: var(--neon-blue);
+    }
+    
+    /* Question Box */
+    .q-box {
+      font-size: 1.5rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+      color: #fff;
+    }
+    
+    /* Options */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .opt-btn {
+      background: rgba(0,0,0,0.6);
+      border: 1px solid var(--neon-purple);
+      color: var(--text-main);
+      padding: 20px;
+      font-size: 1.2rem;
+      font-family: var(--font-main);
+      cursor: pointer;
+      border-radius: 4px;
+      text-align: left;
+      transition: all 0.2s;
+    }
+    .opt-btn:hover:not(:disabled) {
+      background: rgba(176, 38, 255, 0.2);
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+    }
+    .opt-btn.correct {
+      background: rgba(57, 255, 20, 0.2);
+      border-color: var(--neon-green);
+      box-shadow: 0 0 15px var(--neon-green);
+    }
+    .opt-btn.wrong {
+      background: rgba(255, 0, 60, 0.2);
+      border-color: var(--neon-red);
+      box-shadow: 0 0 15px var(--neon-red);
+    }
+    
+    /* Progress */
+    .progress-track {
+      height: 10px;
+      background: #111;
+      border: 1px solid var(--neon-purple);
+      margin-top: 2rem;
+      position: relative;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--neon-purple);
+      width: 0%;
+      transition: width 0.3s;
+      box-shadow: 0 0 10px var(--neon-purple);
+    }
+    
+    /* Screen Overlays */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    h2.over-title {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        text-shadow: 0 0 20px currentColor;
+    }
+    .over-stats {
+        font-family: var(--font-main);
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="arena-container">
+    <div class="hud">
+      <div class="hud-meta" id="hudMeta">LOADING MISSION...</div>
+      <div class="health-bar" id="healthBar"></div>
+    </div>
+    
+    <div class="cyber-panel">
+      <div id="gameError" class="msg-box error"></div>
+      <div id="qCounter" style="color:var(--neon-purple); font-weight:bold; margin-bottom: 1rem;">Q. 1 / ?</div>
+      <div class="q-box" id="qText">Establishing connection...</div>
+      
+      <div id="optionsContainer" class="options-grid"></div>
+      
+      <div id="feedbackMsg" style="text-align: center; font-size: 1.5rem; font-weight: bold; margin-top: 1rem; height: 30px;"></div>
+    </div>
+    
+    <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+  </div>
+
+  <!-- End Screen -->
+  <div id="endScreen" class="overlay hidden">
+    <h2 id="endTitle" class="over-title retro-title"></h2>
+    <div class="over-stats cyber-panel">
+        <p>SCORE: <span id="endScore" style="color:var(--neon-green)">0</span>%</p>
+        <p>XP GAINED: +<span id="endXp">0</span></p>
+        <p>NEW LEVEL: <span id="endLvl" style="color:var(--neon-blue)">0</span></p>
+    </div>
+    <button class="cyber-btn" onclick="window.location.href='dashboard.html'">RETURN TO HUB</button>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

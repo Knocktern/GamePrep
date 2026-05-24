@@ -1,0 +1,192 @@
+:root {
+  --neon-green: #39ff14;
+  --neon-purple: #b026ff;
+  --neon-red: #ff003c;
+  --neon-blue: #00f0ff;
+  --dark-bg: #050508;
+  --panel-bg: rgba(15, 10, 20, 0.85);
+  --border-color: var(--neon-purple);
+  --font-main: 'Rajdhani', sans-serif;
+  --font-retro: 'Press Start 2P', cursive;
+  --text-main: #e0e0e0;
+  --shadow-neon: 0 0 10px var(--neon-purple), 0 0 20px var(--neon-purple);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--dark-bg);
+  background-image: 
+    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Scanline Effect */
+body::after {
+  content: " ";
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 2;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-retro);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.retro-title {
+  color: var(--neon-blue);
+  text-shadow: 0 0 10px var(--neon-blue);
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* UI Panels */
+.cyber-panel {
+  background: var(--panel-bg);
+  border: 2px solid var(--border-color);
+  box-shadow: inset 0 0 20px rgba(176, 38, 255, 0.2), 0 0 15px rgba(176, 38, 255, 0.4);
+  border-radius: 4px;
+  padding: 2rem;
+  position: relative;
+  backdrop-filter: blur(5px);
+}
+
+.cyber-panel::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: -2px;
+  width: 20px; height: 2px;
+  background: var(--neon-blue);
+  box-shadow: 0 0 10px var(--neon-blue);
+}
+.cyber-panel::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; right: -2px;
+  width: 20px; height: 2px;
+  background: var(--neon-blue);
+  box-shadow: 0 0 10px var(--neon-blue);
+}
+
+/* Buttons */
+.cyber-btn {
+  background: transparent;
+  color: var(--neon-green);
+  font-family: var(--font-retro);
+  font-size: 0.8rem;
+  border: 1px solid var(--neon-green);
+  padding: 12px 24px;
+  cursor: pointer;
+  text-transform: uppercase;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 0 5px rgba(57, 255, 20, 0.2);
+  display: inline-block;
+  text-align: center;
+}
+
+.cyber-btn:hover {
+  background: var(--neon-green);
+  color: #000;
+  box-shadow: 0 0 15px var(--neon-green);
+}
+
+.cyber-btn:disabled {
+  border-color: #555;
+  color: #555;
+  cursor: not-allowed;
+  background: transparent;
+  box-shadow: none;
+}
+
+.cyber-btn.danger {
+  color: var(--neon-red);
+  border-color: var(--neon-red);
+}
+.cyber-btn.danger:hover {
+  background: var(--neon-red);
+  color: #fff;
+  box-shadow: 0 0 15px var(--neon-red);
+}
+
+/* Inputs */
+.cyber-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid #444;
+  border-bottom: 2px solid var(--neon-blue);
+  color: var(--text-main);
+  padding: 10px 15px;
+  font-family: var(--font-main);
+  font-size: 1.2rem;
+  font-weight: 600;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.cyber-input:focus {
+  border-bottom-color: var(--neon-purple);
+  background: rgba(176, 38, 255, 0.1);
+}
+
+/* Health Bar */
+.health-bar {
+  display: flex;
+  gap: 10px;
+  font-size: 1.5rem;
+}
+.heart {
+  color: var(--neon-red);
+  text-shadow: 0 0 10px var(--neon-red);
+}
+.heart.empty {
+  color: #333;
+  text-shadow: none;
+}
+
+/* Error/Message box */
+.msg-box {
+  padding: 10px;
+  margin: 10px 0;
+  border-left: 4px solid var(--neon-green);
+  background: rgba(57, 255, 20, 0.1);
+  display: none;
+  font-weight: bold;
+}
+.msg-box.error {
+  border-left-color: var(--neon-red);
+  background: rgba(255, 0, 60, 0.1);
+  color: #ffcccc;
+}
+.msg-box.visible {
+  display: block;
+}
+
+/* Utility */
+.hidden { display: none !important; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.text-center { text-align: center; }
+.mt-1 { margin-top: 1rem; }
+.mt-2 { margin-top: 2rem; }
+.mb-1 { margin-bottom: 1rem; }
+.mb-2 { margin-bottom: 2rem; }

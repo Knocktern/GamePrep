@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GamePrep | LOBBY HUB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .hub-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--neon-purple);
+      padding-bottom: 1rem;
+    }
+    .player-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .player-lvl {
+      background: var(--neon-blue);
+      color: #000;
+      font-family: var(--font-retro);
+      padding: 5px 10px;
+      font-size: 0.8rem;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+    }
+    
+    /* Level Cards instead of dropdowns */
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .level-card {
+      background: rgba(15, 10, 20, 0.9);
+      border: 1px solid var(--neon-purple);
+      padding: 1.5rem;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .level-card:hover {
+      box-shadow: 0 0 15px var(--neon-purple);
+      transform: translateY(-2px);
+    }
+
+    .level-card .field-name {
+      font-size: 0.9rem;
+      color: var(--neon-blue);
+      margin-bottom: 0.5rem;
+      font-family: var(--font-retro);
+    }
+
+    .level-card .topic-name {
+      font-size: 1.4rem;
+      color: var(--text-main);
+      margin-bottom: 1rem;
+      font-weight: bold;
+    }
+
+    .level-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(57, 255, 20, 0.2);
+      color: var(--neon-green);
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border: 1px solid var(--neon-green);
+      font-family: var(--font-retro);
+    }
+
+    .config-panel {
+        margin-top: 1.5rem;
+    }
+
+    .selector-group {
+      margin-bottom: 1.5rem;
+    }
+    .selector-group label {
+      display: block;
+      color: var(--neon-blue);
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+    .cyber-select {
+        width: 100%;
+        background: rgba(0,0,0,0.8);
+        color: var(--neon-green);
+        border: 1px solid var(--neon-purple);
+        padding: 10px;
+        font-family: var(--font-main);
+        font-size: 1.2rem;
+        cursor: pointer;
+    }
+    
+    /* Leaderboard */
+    .leaderboard h2 {
+      font-size: 1.2rem;
+      color: var(--neon-blue);
+      margin-bottom: 1rem;
+    }
+    .lb-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      border-bottom: 1px solid rgba(176, 38, 255, 0.3);
+      font-family: var(--font-main);
+      font-size: 1.1rem;
+    }
+    .lb-row.top-1 { color: #ffd700; font-weight: bold; }
+    .lb-row.top-2 { color: #c0c0c0; }
+    .lb-row.top-3 { color: #cd7f32; }
+
+    .launch-btn-container {
+        margin-top: 3rem;
+        text-align: center;
+    }
+    .launch-btn {
+        font-size: 1.2rem;
+        padding: 20px 40px;
+        box-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hub-container">
+    <nav class="top-nav">
+      <h1 class="retro-title" style="margin:0; font-size:1.5rem;">GAMEPREP HUB</h1>
+      <div class="player-info">
+        <span class="player-lvl" id="playerLvl">LVL --</span>
+        <span id="playerName" style="font-size:1.2rem; font-weight:bold; color:var(--neon-green);">Loading...</span>
+        <button class="cyber-btn danger" style="padding: 5px 10px; font-size: 0.6rem;" onclick="logout()">LOGOUT</button>
+      </div>
+    </nav>
+
+    <div class="grid">
+      
+      <!-- Launch Config -->
+      <div class="cyber-panel" style="grid-column: 1 / -1;">
+        <h2>MISSION SELECT</h2>
+        <div id="gameError" class="msg-box error"></div>
+        <p style="color:var(--neon-blue); margin-bottom: 1rem;">ALL ZONES UNLOCKED AND AVAILABLE FOR COMBAT</p>
+
+        <div id="levelsContainer" class="level-grid">
+          <!-- Level Cards dynamically injected -->
+        </div>
+
+        <div class="config-panel cyber-panel" style="margin-top: 2rem;">
+          <h3 style="color:var(--neon-green); margin-bottom:1rem; font-family:var(--font-main);">CUSTOM MISSION PARAMETERS</h3>
+          <div class="selector-group" style="display:flex; align-items:center; gap: 1rem;">
+            <label style="margin:0;">ENEMY COUNT (Questions):</label>
+            <input type="number" id="qCount" class="cyber-input" value="5" min="1" max="25" style="width:100px;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="cyber-panel leaderboard" style="grid-column: 1 / -1;">
+        <h2>GLOBAL RANKINGS</h2>
+        <div id="leaderboardList">
+          <div class="text-center mt-2">Loading scores...</div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
