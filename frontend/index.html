@@ -156,28 +156,20 @@
           </button>
           <div class="wizard-meta">
             <div class="wizard-step-label">Step 3 of 4</div>
-            <h2 class="wizard-title">Set the Difficulty</h2>
-            <p class="wizard-sub">How hard do you want to go?</p>
+            <h2 class="wizard-title">Plot Your Route</h2>
+            <p class="wizard-sub">Your expedition sails through Easy → Medium → Hard in one run.</p>
           </div>
         </div>
-        <div class="choice-grid diff-grid" id="difficultyGrid">
-          <button class="choice-card diff-easy" data-value="EASY" type="button">
-            <div class="choice-icon">🌱</div>
-            <div class="choice-name">Easy</div>
-            <div class="choice-desc">Perfect for warm-ups and beginners</div>
-            <div class="diff-xp">+10 XP / question</div>
-          </button>
-          <button class="choice-card diff-medium" data-value="MEDIUM" type="button">
-            <div class="choice-icon">🔥</div>
-            <div class="choice-name">Medium</div>
-            <div class="choice-desc">Intermediate challenges to level up</div>
-            <div class="diff-xp">+25 XP / question</div>
-          </button>
-          <button class="choice-card diff-hard" data-value="HARD" type="button">
-            <div class="choice-icon">💀</div>
-            <div class="choice-name">Hard</div>
-            <div class="choice-desc">Elite difficulty for interview warriors</div>
-            <div class="diff-xp">+50 XP / question</div>
+        <div class="route-preview" id="routePreview">
+          <div class="route-track">
+            <div class="route-node easy">Easy</div>
+            <div class="route-node medium">Medium</div>
+            <div class="route-node hard">Hard</div>
+            <div class="route-boat" id="routeBoat">⛵</div>
+          </div>
+          <p class="route-note">Answer correctly to sail forward. Survive the storm to unlock the next topic.</p>
+          <button id="routeContinueBtn" class="btn-primary" type="button">
+            Continue
           </button>
         </div>
       </div>
@@ -195,8 +187,8 @@
           </button>
           <div class="wizard-meta">
             <div class="wizard-step-label">Step 4 of 4</div>
-            <h2 class="wizard-title">How Many Questions?</h2>
-            <p class="wizard-sub">Set the length of this run.</p>
+            <h2 class="wizard-title">Questions Per Difficulty</h2>
+            <p class="wizard-sub">This amount is used for Easy, Medium, and Hard.</p>
           </div>
         </div>
 
@@ -207,7 +199,7 @@
             <button class="count-btn" id="countMinus" type="button">−</button>
             <div class="count-display">
               <span id="questionCountDisplay">5</span>
-              <span class="count-label">questions</span>
+              <span class="count-label">per difficulty</span>
             </div>
             <button class="count-btn" id="countPlus" type="button">+</button>
           </div>
@@ -244,6 +236,15 @@
           </div>
           <div class="health-bar" id="healthBar" aria-label="Health"></div>
           <div class="diff-badge" id="diffBadge">EASY</div>
+        </div>
+
+        <div class="difficulty-trail" id="difficultyTrail" aria-label="Difficulty trail">
+          <div class="trail-track">
+            <div class="trail-node easy" data-level="EASY">Easy</div>
+            <div class="trail-node medium" data-level="MEDIUM">Medium</div>
+            <div class="trail-node hard" data-level="HARD">Hard</div>
+            <div class="trail-boat" id="trailBoat">⛵</div>
+          </div>
         </div>
 
         <div class="question-card" id="questionCard">

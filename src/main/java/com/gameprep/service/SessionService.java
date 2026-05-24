@@ -101,9 +101,6 @@ public class SessionService {
         if (request.getTopic() == null || request.getTopic().isBlank()) {
             throw new RuntimeException("topic is required");
         }
-        if (request.getDifficulty() == null || request.getDifficulty().isBlank()) {
-            throw new RuntimeException("difficulty is required");
-        }
         if (request.getNumberOfQuestions() <= 0) {
             throw new RuntimeException("numberOfQuestions must be greater than 0");
         }
@@ -114,15 +111,22 @@ public class SessionService {
         if (!GameMap.isTopicInField(request.getPrepField(), request.getTopic())) {
             throw new RuntimeException("Topic is not part of the expedition map");
         }
-        if (!playerProgressService.isTopicUnlocked(player, request.getPrepField(), request.getTopic())) {
-            throw new RuntimeException("Topic is locked");
-        }
 
-        List<Question> questions = questionService.getRandomQuestionsByTopic(
-            request.getDifficulty(), request.getPrepField(), request.getTopic(), request.getNumberOfQuestions());
-        int totalQuestions = Math.min(request.getNumberOfQuestions(), questions.size());
+        int perDifficulty = request.getNumberOfQuestions();
+        List<Question> easyQuestions = questionService.getRandomQuestionsByTopic(
+            "EASY", request.getPrepField(), request.getTopic(), perDifficulty);
+        List<Question> mediumQuestions = questionService.getRandomQuestionsByTopic(
+            "MEDIUM", request.getPrepField(), request.getTopic(), perDifficulty);
+        List<Question> hardQuestions = questionService.getRandomQuestionsByTopic(
+            "HARD", request.getPrepField(), request.getTopic(), perDifficulty);
 
-        int startingHealth = startingHealthForDifficulty(request.getDifficulty());
+        List<Question> questions = new java.util.ArrayList<>();
+        questions.addAll(easyQuestions);
+        questions.addAll(mediumQuestions);
+        questions.addAll(hardQuestions);
+        int totalQuestions = questions.size();
+
+        int startingHealth = startingHealthForDifficulty("EASY");
 
         Session session = new Session();
         session.setPlayer(player);

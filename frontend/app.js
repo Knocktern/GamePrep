@@ -289,17 +289,16 @@ function buildTopicMap(field) {
   if (!grid) return;
   const topics = TOPIC_MAP[field] ?? [];
   const progress = progressByField.get(field);
-  const unlocked = progress?.unlocked ?? new Set();
   const cleared  = progress?.cleared ?? new Set();
 
   grid.innerHTML = topics.map((topic, i) => {
-    const isUnlocked = unlocked.has(topic);
+    const isUnlocked = true;
     const isCleared = cleared.has(topic);
-    const statusLabel = isUnlocked ? (isCleared ? "Cleared" : "Unlocked") : "Locked";
-    const statusIcon  = isUnlocked ? (isCleared ? "✅" : "🧭") : "🔒";
+    const statusLabel = isCleared ? "Cleared" : "Available";
+    const statusIcon  = isUnlocked ? (isCleared ? "✅" : "⛵") : "";
     return `
-      <button class="map-node ${isUnlocked ? "unlocked" : "locked"} ${isCleared ? "cleared" : ""}"
-              data-value="${topic}" type="button" ${isUnlocked ? "" : "disabled"}>
+      <button class="map-node unlocked ${isCleared ? "cleared" : ""}"
+              data-value="${topic}" type="button">
         <div class="node-index">${i + 1}</div>
         <div class="node-body">
           <div class="node-title">${topic}</div>
@@ -310,7 +309,6 @@ function buildTopicMap(field) {
   }).join("");
 
   grid.querySelectorAll(".map-node").forEach(card => {
-    if (card.disabled) return;
     card.addEventListener("click", () => {
       selectedTopic = card.dataset.value;
       showView("viewStep3");
@@ -326,14 +324,10 @@ function initStep2() {
    STEP 3 — DIFFICULTY SELECTION
    ===================================================== */
 function initStep3() {
-  const grid = $("difficultyGrid");
-  if (!grid) return;
-  grid.querySelectorAll(".choice-card").forEach(card => {
-    card.addEventListener("click", () => {
-      selectedDifficulty = card.dataset.value;
-      updateRunSummary();
-      showView("viewStep4");
-    });
+  selectedDifficulty = "EXPEDITION";
+  $("routeContinueBtn")?.addEventListener("click", () => {
+    updateRunSummary();
+    showView("viewStep4");
   });
   $("backFromStep3")?.addEventListener("click", () => showView("viewStep2", "back"));
 }
@@ -359,7 +353,7 @@ function updateRunSummary() {
   summary.innerHTML = [
     ["🧩 Field",      fieldLabel],
     ["📌 Topic",      selectedTopic       ?? "—"],
-    ["⚡ Difficulty", selectedDifficulty  ?? "—"],
+    ["⚓ Route",       "Easy → Medium → Hard"],
   ].map(([k,v]) => `<div class="summary-tag">${k}: <strong>${v}</strong></div>`).join("");
 }
 
@@ -398,7 +392,6 @@ async function startGame() {
   const playerId = currentUser?.id;
   if (!playerId) { showLaunchError("You must be logged in."); return; }
   if (!selectedField || !selectedTopic) { showLaunchError("Select a field and topic."); return; }
-  if (!selectedDifficulty) { showLaunchError("Select a difficulty."); return; }
   if (questionCount < 1)   { showLaunchError("At least 1 question required."); return; }
 
   const btn = $("launchRunBtn");
@@ -412,7 +405,6 @@ async function startGame() {
         playerId:        Number(playerId),
         prepField:       selectedField,
         topic:           selectedTopic,
-        difficulty:      selectedDifficulty,
         numberOfQuestions: questionCount,
       }),
     });
@@ -430,7 +422,7 @@ async function startGame() {
     maxHealth            = Number(payload.maxHealth ?? currentHealth ?? 3);
 
     if (!currentQuestions.length) {
-      showLaunchError("No questions found for this selection. Try a different difficulty or topic.");
+      showLaunchError("No questions found for this selection. Try a different topic or lower the count.");
       return;
     }
 
@@ -450,12 +442,6 @@ function initGameView() {
   // Populate top bar
   const meta = $("gameMeta");
   if (meta) meta.textContent = `${selectedField?.replace("_"," ")} • ${selectedTopic}`;
-
-  const badge = $("diffBadge");
-  if (badge) {
-    badge.textContent = selectedDifficulty ?? "EASY";
-    badge.className   = "diff-badge " + (selectedDifficulty ?? "EASY").toLowerCase();
-  }
 
   setProgress(0, currentQuestions.length);
   renderHealth();
@@ -484,6 +470,20 @@ function renderHealth() {
   }
 }
 
+function updateDifficultyTrail(difficulty) {
+  const track = $("difficultyTrail");
+  const boat = $("trailBoat");
+  if (!track || !boat) return;
+  const level = (difficulty || "EASY").toUpperCase();
+  const positions = { EASY: "12%", MEDIUM: "50%", HARD: "88%" };
+  boat.style.left = positions[level] ?? "12%";
+
+  track.querySelectorAll(".trail-node").forEach(node => {
+    const nodeLevel = node.dataset.level;
+    node.classList.toggle("active", nodeLevel === level);
+  });
+}
+
 function renderQuestion() {
   if (!currentQuestions.length) return;
 
@@ -497,9 +497,17 @@ function renderQuestion() {
   const qText = $("qText");
   const opts  = $("optionsContainer");
   const nxt   = $("nextQuestionBtn");
+  const badge = $("diffBadge");
 
   if (qNum)  qNum.textContent  = `Question ${num} of ${total}`;
   if (qText) qText.textContent = q.description || q.title || "—";
+
+  const qDiff = (q.difficulty || "EASY").toUpperCase();
+  if (badge) {
+    badge.textContent = qDiff;
+    badge.className   = "diff-badge " + qDiff.toLowerCase();
+  }
+  updateDifficultyTrail(qDiff);
 
   // ---- Always update the button label first ----
   clearAnswerFeedback();
@@ -527,9 +535,9 @@ function renderQuestion() {
       const inp = document.createElement("input");
       inp.type        = "text";
       inp.id          = "freeAnswer";
-      inp.placeholder = "Type your answer…";
+      inp.placeholder = "Type the exact syntax…";
       inp.value       = "";
-      inp.style.cssText = "width:100%;padding:12px 16px;border-radius:12px;border:1px solid rgba(61,242,198,0.3);background:rgba(255,255,255,0.06);color:var(--text);font-size:1rem;font-family:inherit;";
+      inp.className   = "code-input";
       opts.appendChild(inp);
 
       if (nxt) {

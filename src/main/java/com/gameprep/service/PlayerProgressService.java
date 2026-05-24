@@ -55,16 +55,14 @@ public class PlayerProgressService {
             keys.add(key(progress.getPrepField(), progress.getTopic()));
         }
         for (String prepField : GameMap.getPrepFields()) {
-            String firstTopic = GameMap.getFirstTopic(prepField);
-            if (firstTopic == null) {
-                continue;
+            for (String topic : GameMap.getPath(prepField)) {
+                String candidateKey = key(prepField, topic);
+                if (keys.contains(candidateKey)) {
+                    continue;
+                }
+                playerProgressRepository.save(new PlayerProgress(player, prepField, topic, false));
+                keys.add(candidateKey);
             }
-            String candidateKey = key(prepField, firstTopic);
-            if (keys.contains(candidateKey)) {
-                continue;
-            }
-            playerProgressRepository.save(new PlayerProgress(player, prepField, firstTopic, false));
-            keys.add(candidateKey);
         }
     }
 
