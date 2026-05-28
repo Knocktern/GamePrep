@@ -113,20 +113,26 @@ public class SessionService {
         }
 
         int perDifficulty = request.getNumberOfQuestions();
-        List<Question> easyQuestions = questionService.getRandomQuestionsByTopic(
-            "EASY", request.getPrepField(), request.getTopic(), perDifficulty);
-        List<Question> mediumQuestions = questionService.getRandomQuestionsByTopic(
-            "MEDIUM", request.getPrepField(), request.getTopic(), perDifficulty);
-        List<Question> hardQuestions = questionService.getRandomQuestionsByTopic(
-            "HARD", request.getPrepField(), request.getTopic(), perDifficulty);
-
+        String requestedDiff = request.getDifficulty();
         List<Question> questions = new java.util.ArrayList<>();
-        questions.addAll(easyQuestions);
-        questions.addAll(mediumQuestions);
-        questions.addAll(hardQuestions);
+        
+        if (requestedDiff != null && !requestedDiff.isBlank()) {
+            questions.addAll(questionService.getRandomQuestionsByTopic(
+                requestedDiff.trim().toUpperCase(), request.getPrepField(), request.getTopic(), perDifficulty));
+        } else {
+            List<Question> easyQuestions = questionService.getRandomQuestionsByTopic(
+                "EASY", request.getPrepField(), request.getTopic(), perDifficulty);
+            List<Question> mediumQuestions = questionService.getRandomQuestionsByTopic(
+                "MEDIUM", request.getPrepField(), request.getTopic(), perDifficulty);
+            List<Question> hardQuestions = questionService.getRandomQuestionsByTopic(
+                "HARD", request.getPrepField(), request.getTopic(), perDifficulty);
+            questions.addAll(easyQuestions);
+            questions.addAll(mediumQuestions);
+            questions.addAll(hardQuestions);
+        }
         int totalQuestions = questions.size();
 
-        int startingHealth = startingHealthForDifficulty("EASY");
+        int startingHealth = startingHealthForDifficulty(requestedDiff != null && !requestedDiff.isBlank() ? requestedDiff : "EASY");
 
         Session session = new Session();
         session.setPlayer(player);
