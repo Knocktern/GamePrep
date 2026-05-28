@@ -1,10 +1,12 @@
 package com.gameprep.controller;
 
 import com.gameprep.dto.ErrorResponseDto;
+import com.gameprep.dto.AnswerResultDto;
 import com.gameprep.dto.GameResultDto;
 import com.gameprep.dto.StartGameRequestDto;
 import com.gameprep.dto.StartGameResponseDto;
 import com.gameprep.dto.SubmitGameRequestDto;
+import com.gameprep.dto.SubmitSingleAnswerDto;
 import com.gameprep.model.Player;
 import com.gameprep.service.AuthService;
 import com.gameprep.service.SessionService;
@@ -48,6 +50,18 @@ public class GameController {
             Player player = authService.requirePlayer(resolveToken(authorization));
             request.setPlayerId(player.getId());
             GameResultDto result = sessionService.submitGame(request);
+            return ResponseEntity.ok(result);
+        } catch (RuntimeException ex) {
+            return errorResponse(ex.getMessage());
+        }
+    }
+
+    @PostMapping("/answer")
+    public ResponseEntity<?> submitAnswer(@RequestHeader(value = "Authorization", required = false) String authorization,
+                                          @RequestBody SubmitSingleAnswerDto request) {
+        try {
+            Player player = authService.requirePlayer(resolveToken(authorization));
+            AnswerResultDto result = sessionService.submitAnswer(player, request);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
             return errorResponse(ex.getMessage());
