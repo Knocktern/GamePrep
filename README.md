@@ -1,101 +1,86 @@
-# GamePrep
+# GamePrep 🕹️
 
-GamePrep is a gamified interview-prep platform built with Spring Boot and a lightweight vanilla HTML/CSS/JS frontend. It includes player management, questions, sessions, a leaderboard, and a single-player game flow that serves random questions and scores results.
+GamePrep is a highly gamified, cyberpunk-themed interview-prep platform. It transforms standard software engineering preparation (DSA, OOP, System Design, DBMS) into an immersive arcade experience. Complete with player leveling up, pre-mission learning intel menus, and high-scores, GamePrep takes you out of the boring IDE and into the Matrix.
 
-## Features
-- Player profiles with XP and levels
-- Question bank with difficulty levels
-- Session tracking and leaderboard entries
-- Single-player game flow (start game, answer questions, submit results)
-- Simple neon-themed lobby UI
+---
 
-## Tech Stack
-- Backend: Java 21, Spring Boot, Spring Web, Spring Data JPA, MySQL
-- Frontend: Vanilla HTML/CSS/JS (Live Server)
-- Build: Maven
+## 🎮 The Arcade Interface (Frontend)
+The frontend is designed from the ground up to simulate an arcade terminal. Housed under the `frontend_new` directory, it relies on Vanilla HTML/CSS/JS sprinkled with heavy CSS variables and animations to create a cohesive retro-futuristic atmosphere.
 
-## Project Structure
-```
-src/main/java/com/gameprep
-  config
-  controller
-  dto
-  mapper
-  model
-  repository
-  service
-frontend
-```
+### 🚀 Application Flow & How It Works
+1. **Landing Gateway (`landing.html`)**
+   A fully animated, 3D moving-grid matrix background introduces "New Recruits" and "Veterans" to the platform. 
+2. **Authentication (`index.html`)**
+   The entry portal where users 'Insert Coin' to start. Utilizes a token-based authentication architecture (stored as `gameprep_token_new` in local storage).
+3. **Lobby Hub (`dashboard.html`)**
+   A sleek multi-step wizard used to route players into their exact training scenario:
+   - **Step 1: Worlds (Subjects)** - Select from OOP, DSA, DBMS, or Operating Systems.
+   - **Step 2: Zones (Topics)** - Narrow down to specifics (e.g., Arrays, Classes, SQL Basics).
+   - **Step 2.5: Pre-Mission Intel [NEW]** - An embedded mini-crash course! You receive rich reading texts, documentation cross-links (W3Schools, GeeksForGeeks), and video logs (YouTube tutorials) right inside the HUD.
+   - **Step 3: Mission Config** - Modify the difficulty level (`EASY`, `MEDIUM`, `HARD`) and Enemy Count (number of questions).
+4. **Combat Arena (`arena.html`)**
+   The mission proper. Face off against questions. Features a dynamic health-bar, progress track, and instant feedback. At the end, an "End Screen Overlay" reveals your XP gained, new levels acquired, and total survival score.
 
-## Prerequisites
-- Java 21
-- Maven (or use the included `mvnw` wrapper)
-- MySQL 8.x
+---
 
-## Configuration
-Credentials are loaded from environment variables or a local-only file.
+## ⚙️ Tech Stack
+- **Backend:** Java 21, Spring Boot 3.5+, Spring Web, Spring Data JPA, Hibernate, MySQL.
+- **Frontend:** Vanilla HTML5, CSS3, Vanilla JavaScript.
+- **Build / Tooling:** Maven.
 
-Create a file at `src/main/resources/application-local.properties` (ignored by git):
-```
-DB_USERNAME=root
-DB_PASSWORD=your_password
-```
-
-`src/main/resources/application.properties` already imports the local file:
-```
-spring.config.import=optional:classpath:application-local.properties
-spring.datasource.url=jdbc:mysql://localhost:3306/gameprep_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-spring.datasource.username=${DB_USERNAME:root}
-spring.datasource.password=${DB_PASSWORD:}
-```
-
-## Run the Backend
-```
-./mvnw -DskipTests clean package
-./mvnw spring-boot:run
+## 🏗️ Project Structure
+```text
+gameprep/
+├── frontend_new/            # Cyberpunk Arcade Frontend
+│   ├── css/styles.css       # Core design tokens
+│   ├── js/                  # Routing, API wrapper, and auth logic
+│   ├── landing.html         # Portal Gateway
+│   ├── index.html           # Login/Signup
+│   ├── dashboard.html       # Config Wizard & Intel HUD
+│   └── arena.html           # Core Gameplay Loop
+├── src/main/java...         # Spring Boot Backend Code
+│   ├── config/              # Web & Security Configurations
+│   ├── controller/          # REST API Controllers
+│   ├── dto/                 # Data Transfer Objects
+│   ├── model/               # DB Entities (Player, Question, Leaderboard)
+│   ├── repository/          # JPA Repositories
+│   └── service/             # Business Logic (Score calculating, Leveling)
+├── src/main/resources       # Application properties
+├── seed_questions.sql       # Database Seed for 18+ topics!
+└── pom.xml                  # Maven Dependencies
 ```
 
-Backend base URL:
-- http://localhost:8080
+## 🛠️ Prerequisites
+- **Java 21**, **Maven**, and **MySQL 8.x**.
 
-## Run the Frontend
-Use VS Code Live Server (or any static server) from `frontend/`:
-- http://localhost:5500
+## 🔌 Setup & Configuration
 
-## API Endpoints (Core)
-- Players: `GET/POST /api/players`, `GET/PUT/DELETE /api/players/{id}`
-- Questions: `GET/POST /api/questions`
-- Sessions: `POST /api/sessions/start`, `POST /api/sessions/{id}/end`, `GET /api/sessions/player/{playerId}`
-- Leaderboard: `GET /api/leaderboard`
+1. **Database Setup**
+   Ensure MySQL is running on port 3306. Create a file at `src/main/resources/application-local.properties` (this is ignored by git) to securely store your credentials:
+   ```properties
+   DB_USERNAME=root
+   DB_PASSWORD=your_password
+   ```
 
-## Game Flow API
-- Start game: `POST /api/game/start`
-- Submit game: `POST /api/game/submit`
+2. **Run the Backend**
+   Compile and run the Spring Boot app:
+   ```bash
+   ./mvnw clean package -DskipTests
+   ./mvnw spring-boot:run
+   ```
+   The backend boots up locally on `http://localhost:8080`.
 
-### Start Game Request
-```
-{
-  "playerId": 1,
-  "difficulty": "EASY",
-  "numberOfQuestions": 5
-}
-```
+3. **Run the Frontend**
+   Open the `frontend_new` directory using a local static file server like VS Code's **Live Server** plugin.
+   *Ensure the server runs on standard ports mapped in the CORS config (e.g. `http://localhost:5500` or port `8080` proxied).* Navigate directly to `landing.html` to begin your journey!
 
-### Submit Game Request
-```
-{
-  "sessionId": 1,
-  "playerId": 1,
-  "answers": [
-    { "questionId": 10, "answer": "O(log n)" }
-  ]
-}
-```
+## 💾 API Architecture 
+- **Authentication**: `POST /api/auth/login`, `POST /api/auth/signup`
+- **Game Flow**: 
+  - `POST /api/game/start` (Requests difficulty, topic, limit)
+  - `POST /api/game/submit` (Generates score, calculates XP, determines level ups, updates global leaderboards)
+- **Data Pulls**: `GET /api/leaderboard`, `GET /api/players/{id}`
 
-## Seed Data (Optional)
-If you want demo data quickly, insert sample questions and players into MySQL. You can add your own seed script in a local SQL file or use the one from the chat history.
-
-## Notes
-- The frontend expects the backend at `http://localhost:8080/api`.
-- CORS is enabled for `http://localhost:5500` and `http://127.0.0.1:5500`.
+## 📝 Seed Data Note
+To have a populated Combat Arena out the gate, run the included `seed_questions.sql` within your database. It prepares hundreds of categorized questions spanning OOP, DSA, DBMS, and OS paradigms with matching answers designed for the Gamified API.
 - The leaderboard rank column is `rank_position` in the DB.
