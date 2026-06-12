@@ -26,6 +26,19 @@
       font-size: 1.2rem;
       color: var(--neon-blue);
     }
+    .hud-vitals {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+    .life-status {
+      color: var(--neon-green);
+      font-family: var(--font-retro);
+      font-size: 0.65rem;
+      letter-spacing: 0;
+      text-shadow: 0 0 8px rgba(57, 255, 20, 0.6);
+    }
     
     /* Question Box */
     .q-box {
@@ -33,6 +46,26 @@
       line-height: 1.6;
       margin-bottom: 2rem;
       color: #fff;
+    }
+    .enemy-counter {
+      color: var(--neon-purple);
+      font-family: var(--font-retro);
+      font-size: 0.85rem;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+      border-left: 4px solid var(--neon-red);
+      padding-left: 12px;
+      text-shadow: 0 0 10px rgba(176, 38, 255, 0.8);
+    }
+    .enemy-counter span {
+      color: var(--neon-red);
+    }
+    .enemy-title {
+      color: var(--neon-blue);
+      font-size: 0.8rem;
+      margin-bottom: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
     
     /* Options */
@@ -98,6 +131,26 @@
       max-height: 200px;
       overflow-y: auto;
     }
+
+    .heart {
+      display: inline-block;
+      transform-origin: center;
+      transition: transform 0.25s ease, opacity 0.25s ease, filter 0.25s ease;
+    }
+    .heart.empty {
+      opacity: 0.28;
+      filter: grayscale(1);
+      transform: scale(0.84);
+    }
+    .heart.destroyed {
+      animation: heartBreak 0.75s ease-out both;
+    }
+    @keyframes heartBreak {
+      0% { transform: scale(1); opacity: 1; filter: grayscale(0); }
+      28% { transform: scale(1.35) rotate(-8deg); opacity: 1; filter: drop-shadow(0 0 14px var(--neon-red)); }
+      52% { transform: scale(0.72) rotate(12deg); opacity: 0.65; }
+      100% { transform: scale(0.5) translateY(10px) rotate(-18deg); opacity: 0.25; filter: grayscale(1); }
+    }
     
     /* Progress */
     .progress-track {
@@ -144,12 +197,16 @@
   <div class="arena-container">
     <div class="hud">
       <div class="hud-meta" id="hudMeta">LOADING MISSION...</div>
-      <div class="health-bar" id="healthBar"></div>
+      <div class="hud-vitals">
+        <div class="health-bar" id="healthBar"></div>
+        <div class="life-status" id="lifeStatus">LIVES -- / --</div>
+      </div>
     </div>
     
     <div class="cyber-panel">
       <div id="gameError" class="msg-box error"></div>
-      <div id="qCounter" style="color:var(--neon-purple); font-weight:bold; margin-bottom: 1rem;">Q. 1 / ?</div>
+      <div id="qCounter" class="enemy-counter">ENEMY <span>1</span> / ?</div>
+      <div id="enemyTitle" class="enemy-title">TARGET LOCKING...</div>
       <div class="q-box" id="qText">Establishing connection...</div>
       
       <div id="optionsContainer" class="options-grid"></div>

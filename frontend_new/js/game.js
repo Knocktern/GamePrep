@@ -35,6 +35,7 @@ function showError(msg) {
 function showEmptyMission() {
   sessionStorage.removeItem("current_game");
   document.getElementById("qCounter").textContent = "MISSION UNAVAILABLE";
+  document.getElementById("enemyTitle").textContent = "NO ENEMY SIGNAL";
   document.getElementById("qText").textContent =
     "No questions were loaded for this subject, topic, and difficulty.";
 
@@ -50,12 +51,17 @@ function showEmptyMission() {
   renderHUD();
 }
 
-function renderHUD() {
+function renderHUD(damagedHeartIndex = null) {
   const hb = document.getElementById("healthBar");
+  const maxHealth = session.maxHealth || 3;
   hb.innerHTML = "";
-  for (let i = 0; i < (session.maxHealth || 3); i++) {
-    hb.innerHTML += `<span class="heart ${i >= health ? 'empty' : ''}">❤️</span>`;
+  for (let i = 0; i < maxHealth; i++) {
+    const classes = ["heart"];
+    if (i >= health) classes.push("empty");
+    if (i === damagedHeartIndex) classes.push("destroyed");
+    hb.innerHTML += `<span class="${classes.join(" ")}" title="Life ${i + 1}">❤️</span>`;
   }
+  document.getElementById("lifeStatus").textContent = `LIVES ${health} / ${maxHealth}`;
   const pct = questions.length ? (currentIndex / questions.length) * 100 : 0;
   document.getElementById("progFill").style.width = `${pct}%`;
 }
@@ -64,7 +70,8 @@ function renderQuestion() {
   if (currentIndex >= questions.length) return;
 
   const q = questions[currentIndex];
-  document.getElementById("qCounter").textContent = `Q. ${currentIndex + 1} / ${questions.length}`;
+  document.getElementById("qCounter").innerHTML = `ENEMY <span>${currentIndex + 1}</span> / ${questions.length}`;
+  document.getElementById("enemyTitle").textContent = `${q.type === "CODING" ? "CODE ENEMY" : "MCQ ENEMY"}: ${q.title || "UNKNOWN TARGET"}`;
   document.getElementById("qText").textContent     = q.description || q.title || "—";
   document.getElementById("feedbackMsg").innerHTML = "";
 
@@ -181,10 +188,19 @@ async function submitAnswer(answerVal, btnRef, isCoding) {
           if (b.textContent === correctAns) b.classList.add("correct");
         });
       }
+      const previousHealth = health;
       health = res.currentHealth !== undefined ? res.currentHealth : health - 1;
+      renderHUD(Math.max(health, 0));
+
+      const remaining = Math.max(health, 0);
+      const maxHealth = session.maxHealth || 3;
+      const lifeLine = `LIVES REMAINING: ${remaining} / ${maxHealth}`;
+      fb.insertAdjacentHTML("beforeend", `<div style="color:var(--neon-blue);font-family:var(--font-retro);font-size:0.7rem;margin-top:8px;">${lifeLine}</div>`);
+
+      if (previousHealth === health) renderHUD();
     }
 
-    renderHUD();
+    if (correct) renderHUD();
 
     if (res.sessionStatus === "FAILED" || res.sessionStatus === "COMPLETED") {
       setTimeout(() => showEndScreen(res.finalResult, res.sessionStatus), isCoding ? 2500 : 1500);

@@ -1,86 +1,255 @@
-# GamePrep 🕹️
+# GamePrep
 
-GamePrep is a highly gamified, cyberpunk-themed interview-prep platform. It transforms standard software engineering preparation (DSA, OOP, System Design, DBMS) into an immersive arcade experience. Complete with player leveling up, pre-mission learning intel menus, and high-scores, GamePrep takes you out of the boring IDE and into the Matrix.
+GamePrep is a cyberpunk arcade-style interview preparation app. It turns OOP, DSA, Operating Systems, and DBMS practice into a mission loop: choose a field, study difficulty-matched pre-mission intel, fight question enemies, lose lives on wrong answers, earn XP, and climb the leaderboard.
 
----
+The project is currently a Spring Boot backend with a vanilla HTML/CSS/JavaScript frontend in [frontend_new](frontend_new).
 
-## 🎮 The Arcade Interface (Frontend)
-The frontend is designed from the ground up to simulate an arcade terminal. Housed under the `frontend_new` directory, it relies on Vanilla HTML/CSS/JS sprinkled with heavy CSS variables and animations to create a cohesive retro-futuristic atmosphere.
+## Current Features
 
-### 🚀 Application Flow & How It Works
-1. **Landing Gateway (`landing.html`)**
-   A fully animated, 3D moving-grid matrix background introduces "New Recruits" and "Veterans" to the platform. 
-2. **Authentication (`index.html`)**
-   The entry portal where users 'Insert Coin' to start. Utilizes a token-based authentication architecture (stored as `gameprep_token_new` in local storage).
-3. **Lobby Hub (`dashboard.html`)**
-   A sleek multi-step wizard used to route players into their exact training scenario:
-   - **Step 1: Worlds (Subjects)** - Select from OOP, DSA, DBMS, or Operating Systems.
-   - **Step 2: Zones (Topics)** - Narrow down to specifics (e.g., Arrays, Classes, SQL Basics).
-   - **Step 2.5: Pre-Mission Intel [NEW]** - An embedded mini-crash course! You receive rich reading texts, documentation cross-links (W3Schools, GeeksForGeeks), and video logs (YouTube tutorials) right inside the HUD.
-   - **Step 3: Mission Config** - Modify the difficulty level (`EASY`, `MEDIUM`, `HARD`) and Enemy Count (number of questions).
-4. **Combat Arena (`arena.html`)**
-   The mission proper. Face off against questions. Features a dynamic health-bar, progress track, and instant feedback. At the end, an "End Screen Overlay" reveals your XP gained, new levels acquired, and total survival score.
+- Multi-user signup and login with token-based sessions stored in browser local storage.
+- Cyberpunk landing page with recruit/veteran entry, signal stats, and mission briefing.
+- Mission selection by subject, topic, and difficulty.
+- Difficulty-specific lessons before each mission.
+- MCQ and coding-style questions.
+- Enemy-based arena UI where every question is shown as an enemy.
+- Health/lives HUD with heart damage animation on wrong answers.
+- Expected answer reveal for wrong MCQ and coding answers.
+- XP, levels, mission completion/failure, and leaderboard support.
+- Local and port-forward-friendly API configuration for frontend testing.
 
----
+## Learning Tracks
 
-## ⚙️ Tech Stack
-- **Backend:** Java 21, Spring Boot 3.5+, Spring Web, Spring Data JPA, Hibernate, MySQL.
-- **Frontend:** Vanilla HTML5, CSS3, Vanilla JavaScript.
-- **Build / Tooling:** Maven.
+The dashboard currently exposes these tracks:
 
-## 🏗️ Project Structure
+| Field | Topics |
+|---|---|
+| OOP | Classes, Inheritance, Polymorphism, Encapsulation |
+| DSA | Arrays, Linked List, Stack, Queue, Tree, Graph |
+| Operating System | Bash Script, Process, Thread, Memory Management |
+| DBMS | SQL Basics, Normalization, Indexing, Transactions |
+
+Question languages are aligned with the track:
+
+- OOP: Java
+- DSA: C++
+- Operating System: Bash
+- DBMS: SQL
+
+## Tech Stack
+
+- Backend: Java 21, Spring Boot 3.5, Spring Web, Spring Data JPA, Hibernate, MySQL
+- Frontend: HTML, CSS, vanilla JavaScript
+- Auth: simple token stored on the `players` table and in browser `localStorage`
+- Build: Maven wrapper
+
+## Project Structure
+
 ```text
 gameprep/
-├── frontend_new/            # Cyberpunk Arcade Frontend
-│   ├── css/styles.css       # Core design tokens
-│   ├── js/                  # Routing, API wrapper, and auth logic
-│   ├── landing.html         # Portal Gateway
-│   ├── index.html           # Login/Signup
-│   ├── dashboard.html       # Config Wizard & Intel HUD
-│   └── arena.html           # Core Gameplay Loop
-├── src/main/java...         # Spring Boot Backend Code
-│   ├── config/              # Web & Security Configurations
-│   ├── controller/          # REST API Controllers
-│   ├── dto/                 # Data Transfer Objects
-│   ├── model/               # DB Entities (Player, Question, Leaderboard)
-│   ├── repository/          # JPA Repositories
-│   └── service/             # Business Logic (Score calculating, Leveling)
-├── src/main/resources       # Application properties
-├── seed_questions.sql       # Database Seed for 18+ topics!
-└── pom.xml                  # Maven Dependencies
+├── frontend_new/
+│   ├── landing.html          # Main entry page
+│   ├── index.html            # Login/signup screen
+│   ├── dashboard.html        # Mission selection and lesson/intel flow
+│   ├── arena.html            # Enemy question arena
+│   ├── css/styles.css        # Shared cyberpunk theme
+│   └── js/
+│       ├── api.js            # API base resolution, token headers, fetch wrapper
+│       ├── auth.js           # Login/signup flow
+│       ├── dashboard.js      # Topics, lessons, mission launch
+│       └── game.js           # Arena rendering, answers, lives, end screen
+├── src/main/java/com/gameprep/
+│   ├── config/               # CORS, password encoder, web config
+│   ├── controller/           # REST API controllers
+│   ├── dto/                  # Request/response DTOs
+│   ├── mapper/               # Entity/DTO mapping
+│   ├── model/                # JPA entities
+│   ├── repository/           # Spring Data repositories
+│   ├── service/              # Auth, game sessions, scoring, progress, leaderboard
+│   └── util/                 # Topic map
+├── src/main/resources/
+│   ├── application.properties
+│   └── application-local.properties
+├── seed_questions_v2_part1.sql      # OOP questions
+├── seed_questions_v2_part2.sql      # DSA Arrays, Linked List, Stack
+├── seed_questions_v2_part3.sql      # DSA Queue, Tree, Graph
+├── seed_questions_os_dbms.sql       # Operating System and DBMS questions
+└── pom.xml
 ```
 
-## 🛠️ Prerequisites
-- **Java 21**, **Maven**, and **MySQL 8.x**.
+## Prerequisites
 
-## 🔌 Setup & Configuration
+- Java 21
+- MySQL 8.x
+- A local static server for the frontend, such as VS Code Live Server
 
-1. **Database Setup**
-   Ensure MySQL is running on port 3306. Create a file at `src/main/resources/application-local.properties` (this is ignored by git) to securely store your credentials:
-   ```properties
-   DB_USERNAME=root
-   DB_PASSWORD=your_password
-   ```
+Maven is provided through the wrapper scripts [mvnw](mvnw) and [mvnw.cmd](mvnw.cmd).
 
-2. **Run the Backend**
-   Compile and run the Spring Boot app:
-   ```bash
-   ./mvnw clean package -DskipTests
-   ./mvnw spring-boot:run
-   ```
-   The backend boots up locally on `http://localhost:8080`.
+## Database Setup
 
-3. **Run the Frontend**
-   Open the `frontend_new` directory using a local static file server like VS Code's **Live Server** plugin.
-   *Ensure the server runs on standard ports mapped in the CORS config (e.g. `http://localhost:5500` or port `8080` proxied).* Navigate directly to `landing.html` to begin your journey!
+Create the database if it does not exist:
 
-## 💾 API Architecture 
-- **Authentication**: `POST /api/auth/login`, `POST /api/auth/signup`
-- **Game Flow**: 
-  - `POST /api/game/start` (Requests difficulty, topic, limit)
-  - `POST /api/game/submit` (Generates score, calculates XP, determines level ups, updates global leaderboards)
-- **Data Pulls**: `GET /api/leaderboard`, `GET /api/players/{id}`
+```sql
+CREATE DATABASE IF NOT EXISTS gameprep_db;
+```
 
-## 📝 Seed Data Note
-To have a populated Combat Arena out the gate, run the included `seed_questions.sql` within your database. It prepares hundreds of categorized questions spanning OOP, DSA, DBMS, and OS paradigms with matching answers designed for the Gamified API.
-- The leaderboard rank column is `rank_position` in the DB.
+The default datasource is configured in [application.properties](src/main/resources/application.properties). You can override credentials in `src/main/resources/application-local.properties`:
+
+```properties
+spring.datasource.username=root
+spring.datasource.password=your_password
+```
+
+The app uses `spring.jpa.hibernate.ddl-auto=update`, so tables are created/updated when the backend starts.
+
+## Seed Data
+
+For full mission coverage, run the seed scripts manually in MySQL.
+
+Recommended run order:
+
+```sql
+SOURCE C:/Users/Acer/Desktop/gameprep/seed_questions_v2_part1.sql;
+SOURCE C:/Users/Acer/Desktop/gameprep/seed_questions_v2_part2.sql;
+SOURCE C:/Users/Acer/Desktop/gameprep/seed_questions_v2_part3.sql;
+SOURCE C:/Users/Acer/Desktop/gameprep/seed_questions_os_dbms.sql;
+```
+
+Coverage goal:
+
+- 20 MCQ questions per topic per difficulty
+- 5 coding questions per topic per difficulty
+- Difficulties: EASY, MEDIUM, HARD
+
+To verify question counts:
+
+```sql
+SELECT
+    prep_field,
+    topic,
+    difficulty,
+    type,
+    COUNT(*) AS question_count
+FROM questions
+GROUP BY prep_field, topic, difficulty, type
+ORDER BY prep_field, topic, difficulty, type;
+```
+
+## Run The Backend
+
+From the project root:
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+Or build first:
+
+```powershell
+.\mvnw.cmd clean package -DskipTests
+.\mvnw.cmd spring-boot:run
+```
+
+Backend URL:
+
+```text
+http://localhost:8080
+```
+
+## Run The Frontend Locally
+
+Use Live Server or another static server from the [frontend_new](frontend_new) folder.
+
+Typical local URL:
+
+```text
+http://localhost:5500/landing.html
+```
+
+You can also open [landing.html](frontend_new/landing.html) directly from disk for local development, but a static server is recommended.
+
+## Port Forward Testing
+
+The frontend API wrapper in [api.js](frontend_new/js/api.js) supports port-forwarded testing.
+
+If you forward both ports:
+
+- Frontend: `5500`
+- Backend: `8080`
+
+Open the forwarded frontend URL. The frontend will try to reach the same host on backend port `8080`.
+
+If the forwarded backend URL is separate, pass it explicitly:
+
+```text
+https://your-forwarded-5500-url/index.html?api=https://your-forwarded-8080-url
+```
+
+The `?api=` value may include `/api`, but it is not required.
+
+## API Summary
+
+Authentication:
+
+- `POST /api/auth/signup`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+- `POST /api/auth/logout`
+
+Game flow:
+
+- `POST /api/game/start`
+- `POST /api/game/answer`
+- `POST /api/game/submit`
+
+Player and leaderboard:
+
+- `GET /api/players`
+- `GET /api/players/{id}`
+- `GET /api/players/me/progress`
+- `GET /api/leaderboard`
+
+Questions:
+
+- `GET /api/questions`
+- `GET /api/questions?difficulty=EASY`
+- `POST /api/questions`
+
+## Development Notes
+
+- Restart the backend after Java changes.
+- Refresh the browser after frontend JavaScript or HTML changes.
+- If login/signup says `Failed to fetch`, check that backend port `8080` is reachable from the browser and that the forwarded frontend is using the correct `?api=` URL.
+- If a mission has no questions, the backend rejects empty mission starts and the arena shows a clear fallback message for stale sessions.
+- The leaderboard rank column is `rank_position` in the database.
+
+## Useful Commands
+
+Compile backend:
+
+```powershell
+.\mvnw.cmd -DskipTests clean compile
+```
+
+Check frontend JavaScript syntax:
+
+```powershell
+node --check frontend_new/js/api.js
+node --check frontend_new/js/auth.js
+node --check frontend_new/js/dashboard.js
+node --check frontend_new/js/game.js
+```
+
+## Possible Next Features
+
+Good next additions for this project:
+
+- Admin question manager: add/edit/delete questions from a protected dashboard instead of editing SQL.
+- Real code evaluation: run coding answers against test cases in a sandboxed service instead of exact string comparison.
+- Mission review screen: after a mission, show every enemy, the user's answer, correct answer, explanation, and retry option.
+- Streaks and daily missions: encourage regular practice with daily XP bonuses.
+- Achievement badges: unlock badges for clearing topics, perfect runs, hard-mode wins, and coding-question streaks.
+- Adaptive difficulty: increase or decrease difficulty based on recent accuracy.
+- Better progress map: show locked/unlocked/cleared topics visually per player.
+- Timed boss fights: add optional countdown missions for interview-speed practice.
+- Explanation field for questions: store a detailed explanation in the DB and display it after answering.
+- Public deployment profile: add production-ready config for deployed frontend/backend URLs.

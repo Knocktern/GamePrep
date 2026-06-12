@@ -36,11 +36,7 @@ public class AuthService {
             throw new RuntimeException("Password must be at least 6 characters");
         }
 
-        long totalPlayers = playerRepository.count();
         Optional<Player> existing = playerRepository.findByUsername(username);
-        if (totalPlayers > 0 && existing.isEmpty()) {
-            throw new RuntimeException("Only one gamer account is allowed");
-        }
         if (existing.isPresent()) {
             Player player = existing.get();
             if (player.getPasswordHash() == null || player.getPasswordHash().isBlank()) {
