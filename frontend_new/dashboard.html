@@ -176,16 +176,40 @@
             </div>
         </div>
 
-        <!-- STEP 2.5: Intel (Learning) -->
+        <!-- STEP 2.5: Difficulty Select -->
+        <div id="stepDiff" class="hidden" style="margin-top: 2rem;">
+            <button class="cyber-btn danger mb-2" id="backToTopicsBtn" style="padding: 8px 16px;">&lt; BACK TO ZONES</button>
+            <p style="color:var(--neon-blue); margin-bottom: 2rem;">STEP 2.5: SELECT DIFFICULTY — CHOOSE YOUR THREAT LEVEL</p>
+            <div style="display:flex; gap: 1.5rem; flex-wrap:wrap;">
+                <div class="level-card diff-card" data-val="EASY" style="cursor:pointer; flex:1; min-width:200px; border-color:#39ff14; text-align:center;">
+                    <div style="font-size:2rem; margin-bottom:0.5rem;">🟢</div>
+                    <div style="font-family:var(--font-retro); font-size:1rem; color:#39ff14;">EASY</div>
+                    <div style="font-size:0.9rem; color:#aaa; margin-top:0.5rem;">Core concepts &amp; fundamentals</div>
+                </div>
+                <div class="level-card diff-card" data-val="MEDIUM" style="cursor:pointer; flex:1; min-width:200px; border-color:var(--neon-blue); text-align:center;">
+                    <div style="font-size:2rem; margin-bottom:0.5rem;">🟡</div>
+                    <div style="font-family:var(--font-retro); font-size:1rem; color:var(--neon-blue);">MEDIUM</div>
+                    <div style="font-size:0.9rem; color:#aaa; margin-top:0.5rem;">Patterns, pitfalls &amp; edge cases</div>
+                </div>
+                <div class="level-card diff-card" data-val="HARD" style="cursor:pointer; flex:1; min-width:200px; border-color:var(--neon-red); text-align:center;">
+                    <div style="font-size:2rem; margin-bottom:0.5rem;">🔴</div>
+                    <div style="font-family:var(--font-retro); font-size:1rem; color:var(--neon-red);">HARD</div>
+                    <div style="font-size:0.9rem; color:#aaa; margin-top:0.5rem;">Advanced internals &amp; expert patterns</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 3: Intel (Learning) — content is difficulty-matched -->
         <div id="stepIntel" class="hidden" style="margin-top: 2rem;">
-            <button class="cyber-btn danger mb-2" id="backToTopicsBtnFromIntel" style="padding: 8px 16px;">&lt; BACK TO ZONES</button>
+            <button class="cyber-btn danger mb-2" id="backToDiffBtn" style="padding: 8px 16px;">&lt; BACK TO DIFFICULTY</button>
             <div class="cyber-panel">
-                <h3 style="color:var(--neon-green); margin-bottom:1rem; font-size:1.5rem; text-shadow: 0 0 5px var(--neon-green);">PRE-MISSION INTEL: <span id="intelTopicName">Topic</span></h3>
-                
-                <div style="background: rgba(0,0,0,0.6); border: 1px solid var(--neon-blue); padding: 15px; border-radius: 5px; max-height: 400px; overflow-y: auto; margin-bottom: 1.5rem;">
+                <h3 style="color:var(--neon-green); margin-bottom:0.5rem; font-size:1.5rem; text-shadow: 0 0 5px var(--neon-green);">PRE-MISSION INTEL: <span id="intelTopicName">Topic</span></h3>
+                <p id="intelDiffBadge" style="color:var(--neon-blue); margin-bottom:1rem; font-size:0.9rem;"></p>
+
+                <div style="background: rgba(0,0,0,0.6); border: 1px solid var(--neon-blue); padding: 15px; border-radius: 5px; max-height: 420px; overflow-y: auto; margin-bottom: 1.5rem;">
                     <div id="intelText" style="font-size: 1.1rem; line-height: 1.6; color: #ddd;"></div>
                 </div>
-                
+
                 <h4 style="color:var(--neon-blue); margin-bottom:0.5rem;">RECOMMENDED READINGS</h4>
                 <div id="intelLinks" style="margin-bottom: 1.5rem;"></div>
 
@@ -198,24 +222,20 @@
             </div>
         </div>
 
-        <!-- STEP 3: Config & Launch -->
+        <!-- STEP 4: Config & Launch (difficulty already chosen) -->
         <div id="step3" class="hidden" style="margin-top: 2rem;">
             <button class="cyber-btn danger mb-2" id="backToIntelBtn" style="padding: 8px 16px;">&lt; BACK TO INTEL</button>
             <div class="config-panel cyber-panel">
-              <h3 style="color:var(--neon-green); margin-bottom:1.5rem; font-family:var(--font-main);">STEP 3: MISSION PARAMETERS</h3>
-              
-              <div style="margin-bottom: 1.5rem;">
-                  <label style="color:var(--neon-blue); display:block; margin-bottom:0.5rem; font-weight:bold;">DIFFICULTY LEVEL</label>
-                  <div id="diffSelector" style="display:flex; gap:10px;">
-                      <button class="cyber-btn diff-btn" data-val="EASY">EASY</button>
-                      <button class="cyber-btn diff-btn active" data-val="MEDIUM">MEDIUM</button>
-                      <button class="cyber-btn diff-btn" data-val="HARD">HARD</button>
-                  </div>
+              <h3 style="color:var(--neon-green); margin-bottom:1.5rem; font-family:var(--font-main);">STEP 4: MISSION PARAMETERS</h3>
+
+              <div style="margin-bottom: 1.5rem; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--neon-purple); border-radius:4px;">
+                  <label style="color:var(--neon-blue); display:block; margin-bottom:0.3rem; font-weight:bold;">SELECTED DIFFICULTY</label>
+                  <span id="selectedDiffDisplay" style="font-family:var(--font-retro); font-size:1.1rem; color:var(--neon-green);">--</span>
               </div>
 
               <div class="selector-group" style="display:flex; align-items:center; gap: 1rem; margin-bottom:2rem;">
                 <label style="margin:0; color:var(--text-main); font-weight:bold;">ENEMY COUNT (Questions):</label>
-                <input type="number" id="qCount" class="cyber-input" value="5" min="1" max="25" style="width:100px;">
+                <input type="number" id="qCount" class="cyber-input" value="5" min="1" max="20" style="width:100px;">
               </div>
 
               <button id="launchBtn" class="cyber-btn" style="width:100%; border-color:var(--neon-purple); color:var(--neon-purple); font-size:1.2rem; padding: 20px;">
