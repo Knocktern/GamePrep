@@ -1088,6 +1088,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const topicsContainer   = document.getElementById("topicsContainer");
   const launchBtn         = document.getElementById("launchBtn");
   const msgBox            = document.getElementById("gameError");
+  const wizardSteps       = [step1, step2, stepDiff, stepIntel, step3];
 
   function showError(msg) {
     msgBox.textContent = msg;
@@ -1096,9 +1097,31 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function showOnly(el) {
-    [step1, step2, stepDiff, stepIntel, step3].forEach(s => s.classList.add("hidden"));
+    if (!el) {
+      showError("UI ERROR: Mission panel not found.");
+      return;
+    }
+
+    wizardSteps.forEach(step => {
+      if (!step) return;
+      step.classList.add("hidden");
+      step.setAttribute("aria-hidden", "true");
+    });
+
     el.classList.remove("hidden");
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    el.setAttribute("aria-hidden", "false");
+    el.scrollIntoView({ behavior: "auto", block: "start" });
+  }
+
+  function showMissionParameters() {
+    if (!selectedField || !selectedTopic || !selectedDiff) {
+      showError("ROUTING ERROR: Select a subject, topic, and difficulty first.");
+      showOnly(selectedTopic ? stepDiff : selectedField ? step2 : step1);
+      return;
+    }
+
+    document.getElementById("selectedDiffDisplay").textContent = selectedDiff;
+    showOnly(step3);
   }
 
   // ── Step 1: Subjects ────────────────────────────────────────────────────
@@ -1152,8 +1175,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("backToDiffBtn").addEventListener("click", () => showOnly(stepDiff));
 
   document.getElementById("proceedToConfigBtn").addEventListener("click", () => {
-    document.getElementById("selectedDiffDisplay").textContent = selectedDiff;
-    showOnly(step3);
+    showMissionParameters();
   });
 
   // ── Step 4: Launch ──────────────────────────────────────────────────────
@@ -1176,6 +1198,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         prepField: selectedField, topic: selectedTopic,
         difficulty: selectedDiff, numberOfQuestions: count
       });
+
+      if (!Array.isArray(res.questions) || res.questions.length === 0) {
+        throw new Error(`No questions available for ${selectedField} / ${selectedTopic} / ${selectedDiff}. Run the matching seed SQL first.`);
+      }
+
       sessionStorage.setItem("current_game", JSON.stringify(res));
       window.location.href = "arena.html";
     } catch (err) {

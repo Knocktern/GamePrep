@@ -1,5 +1,6 @@
 -- ============================================================
 -- GamePrep OS + DBMS Question Seed Script
+-- Generated for the missing coverage shown in DB select result.csv.
 -- Adds/replaces only OPERATING_SYSTEM and DBMS questions.
 -- Coverage: 8 topics x 3 difficulties x (20 MCQ + 5 CODING) = 600 rows.
 -- Coding languages: Bash for OS, SQL for DBMS.

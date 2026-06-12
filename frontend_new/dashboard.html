@@ -169,7 +169,7 @@
 
         <!-- STEP 2: Select Topic -->
         <div id="step2" class="hidden" style="margin-top: 2rem;">
-            <button class="cyber-btn danger mb-2" id="backToSubjectsBtn" style="padding: 8px 16px;">&lt; BACK TO WORLDS</button>
+            <button type="button" class="cyber-btn danger mb-2" id="backToSubjectsBtn" style="padding: 8px 16px;">&lt; BACK TO WORLDS</button>
             <p style="color:var(--neon-blue); margin-bottom: 2rem;">STEP 2: SELECT YOUR ZONE (TOPIC)</p>
             <div id="topicsContainer" class="level-grid">
                <!-- Topics injected -->
@@ -178,7 +178,7 @@
 
         <!-- STEP 2.5: Difficulty Select -->
         <div id="stepDiff" class="hidden" style="margin-top: 2rem;">
-            <button class="cyber-btn danger mb-2" id="backToTopicsBtn" style="padding: 8px 16px;">&lt; BACK TO ZONES</button>
+            <button type="button" class="cyber-btn danger mb-2" id="backToTopicsBtn" style="padding: 8px 16px;">&lt; BACK TO ZONES</button>
             <p style="color:var(--neon-blue); margin-bottom: 2rem;">STEP 2.5: SELECT DIFFICULTY — CHOOSE YOUR THREAT LEVEL</p>
             <div style="display:flex; gap: 1.5rem; flex-wrap:wrap;">
                 <div class="level-card diff-card" data-val="EASY" style="cursor:pointer; flex:1; min-width:200px; border-color:#39ff14; text-align:center;">
@@ -201,7 +201,7 @@
 
         <!-- STEP 3: Intel (Learning) — content is difficulty-matched -->
         <div id="stepIntel" class="hidden" style="margin-top: 2rem;">
-            <button class="cyber-btn danger mb-2" id="backToDiffBtn" style="padding: 8px 16px;">&lt; BACK TO DIFFICULTY</button>
+            <button type="button" class="cyber-btn danger mb-2" id="backToDiffBtn" style="padding: 8px 16px;">&lt; BACK TO DIFFICULTY</button>
             <div class="cyber-panel">
                 <h3 style="color:var(--neon-green); margin-bottom:0.5rem; font-size:1.5rem; text-shadow: 0 0 5px var(--neon-green);">PRE-MISSION INTEL: <span id="intelTopicName">Topic</span></h3>
                 <p id="intelDiffBadge" style="color:var(--neon-blue); margin-bottom:1rem; font-size:0.9rem;"></p>
@@ -216,7 +216,7 @@
                 <h4 style="color:var(--neon-red); margin-bottom:0.5rem;">VIDEO LOGS</h4>
                 <div id="intelVideo" style="margin-bottom: 2rem;"></div>
 
-                <button id="proceedToConfigBtn" class="cyber-btn" style="width:100%; border-color:var(--neon-purple); color:var(--text-main); font-size:1.2rem;">
+                <button type="button" id="proceedToConfigBtn" class="cyber-btn" style="width:100%; border-color:var(--neon-purple); color:var(--text-main); font-size:1.2rem;">
                     PROCEED TO MISSION PARAMETERS &gt;
                 </button>
             </div>
@@ -224,7 +224,7 @@
 
         <!-- STEP 4: Config & Launch (difficulty already chosen) -->
         <div id="step3" class="hidden" style="margin-top: 2rem;">
-            <button class="cyber-btn danger mb-2" id="backToIntelBtn" style="padding: 8px 16px;">&lt; BACK TO INTEL</button>
+            <button type="button" class="cyber-btn danger mb-2" id="backToIntelBtn" style="padding: 8px 16px;">&lt; BACK TO INTEL</button>
             <div class="config-panel cyber-panel">
               <h3 style="color:var(--neon-green); margin-bottom:1.5rem; font-family:var(--font-main);">STEP 4: MISSION PARAMETERS</h3>
 
@@ -238,7 +238,7 @@
                 <input type="number" id="qCount" class="cyber-input" value="5" min="1" max="20" style="width:100px;">
               </div>
 
-              <button id="launchBtn" class="cyber-btn" style="width:100%; border-color:var(--neon-purple); color:var(--neon-purple); font-size:1.2rem; padding: 20px;">
+              <button type="button" id="launchBtn" class="cyber-btn" style="width:100%; border-color:var(--neon-purple); color:var(--neon-purple); font-size:1.2rem; padding: 20px;">
                  INITIATE COMBAT SEQUENCE
               </button>
             </div>

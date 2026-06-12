@@ -17,7 +17,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("hudMeta").textContent =
     `FIELD: ${session.prepField || "?"} | ZONE: ${session.topic || "?"} | DIFF: ${session.difficulty || "?"}`;
 
-  if (questions.length === 0) { showError("CRITICAL ERROR: No questions loaded."); return; }
+  if (questions.length === 0) {
+    showEmptyMission();
+    return;
+  }
   renderHUD();
   renderQuestion();
 });
@@ -27,6 +30,24 @@ function showError(msg) {
   b.textContent = msg;
   b.className = "msg-box error visible";
   setTimeout(() => b.className = "msg-box error", 3000);
+}
+
+function showEmptyMission() {
+  sessionStorage.removeItem("current_game");
+  document.getElementById("qCounter").textContent = "MISSION UNAVAILABLE";
+  document.getElementById("qText").textContent =
+    "No questions were loaded for this subject, topic, and difficulty.";
+
+  const optsBox = document.getElementById("optionsContainer");
+  optsBox.style.gridTemplateColumns = "1fr";
+  optsBox.innerHTML = `
+    <div class="msg-box error visible" style="display:block; text-align:left;">
+      This mission has no seeded questions yet. Return to the hub and choose another mission, or run the missing seed SQL for this topic.
+    </div>
+    <button type="button" class="cyber-btn" onclick="window.location.href='dashboard.html'">RETURN TO HUB</button>`;
+
+  document.getElementById("feedbackMsg").innerHTML = "";
+  renderHUD();
 }
 
 function renderHUD() {

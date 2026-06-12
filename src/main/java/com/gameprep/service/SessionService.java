@@ -132,6 +132,15 @@ public class SessionService {
         }
         int totalQuestions = questions.size();
 
+        if (totalQuestions == 0) {
+            String difficulty = requestedDiff == null || requestedDiff.isBlank()
+                ? "any difficulty"
+                : requestedDiff.trim().toUpperCase();
+            throw new RuntimeException("No questions available for "
+                + request.getPrepField() + " / " + request.getTopic() + " / " + difficulty
+                + ". Please seed questions for this mission before starting.");
+        }
+
         int startingHealth = startingHealthForDifficulty(requestedDiff != null && !requestedDiff.isBlank() ? requestedDiff : "EASY");
 
         Session session = new Session();
