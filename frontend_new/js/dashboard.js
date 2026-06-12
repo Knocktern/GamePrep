@@ -693,9 +693,9 @@ done</code></pre>
 trap 'echo "Error on line $LINENO"' ERR</code></pre>
         <p><strong>Arrays:</strong></p>
         <pre style="background:#111;padding:12px;border-radius:4px;overflow-x:auto"><code>FRUITS=("apple" "banana" "cherry")
-echo ${FRUITS[1]}        # banana
-echo ${#FRUITS[@]}       # array length
-for f in "${FRUITS[@]}"; do echo $f; done</code></pre>
+echo \${FRUITS[1]}        # banana
+echo \${#FRUITS[@]}       # array length
+for f in "\${FRUITS[@]}"; do echo $f; done</code></pre>
         <p><strong>Regular expressions with sed/awk:</strong></p>
         <pre style="background:#111;padding:12px;border-radius:4px;overflow-x:auto"><code>sed 's/foo/bar/g' file.txt          # replace all foo with bar
 awk '{sum += $2} END {print sum}' data.txt  # sum column 2

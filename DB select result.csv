@@ -1,0 +1,43 @@
+prep_field,topic,difficulty,type,cnt
+DSA,Arrays,EASY,CODING,5
+DSA,Arrays,EASY,MCQ,20
+DSA,Arrays,HARD,CODING,5
+DSA,Arrays,HARD,MCQ,20
+DSA,Arrays,MEDIUM,CODING,5
+DSA,Arrays,MEDIUM,MCQ,20
+DSA,"Linked List",EASY,CODING,5
+DSA,"Linked List",EASY,MCQ,20
+DSA,"Linked List",HARD,CODING,5
+DSA,"Linked List",HARD,MCQ,20
+DSA,"Linked List",MEDIUM,CODING,5
+DSA,"Linked List",MEDIUM,MCQ,20
+DSA,Stack,EASY,CODING,5
+DSA,Stack,EASY,MCQ,20
+DSA,Stack,HARD,CODING,5
+DSA,Stack,HARD,MCQ,20
+DSA,Stack,MEDIUM,CODING,5
+DSA,Stack,MEDIUM,MCQ,20
+OOP,Classes,EASY,CODING,5
+OOP,Classes,EASY,MCQ,20
+OOP,Classes,HARD,CODING,5
+OOP,Classes,HARD,MCQ,20
+OOP,Classes,MEDIUM,CODING,5
+OOP,Classes,MEDIUM,MCQ,20
+OOP,Encapsulation,EASY,CODING,5
+OOP,Encapsulation,EASY,MCQ,20
+OOP,Encapsulation,HARD,CODING,5
+OOP,Encapsulation,HARD,MCQ,20
+OOP,Encapsulation,MEDIUM,CODING,5
+OOP,Encapsulation,MEDIUM,MCQ,20
+OOP,Inheritance,EASY,CODING,5
+OOP,Inheritance,EASY,MCQ,20
+OOP,Inheritance,HARD,CODING,5
+OOP,Inheritance,HARD,MCQ,20
+OOP,Inheritance,MEDIUM,CODING,5
+OOP,Inheritance,MEDIUM,MCQ,20
+OOP,Polymorphism,EASY,CODING,5
+OOP,Polymorphism,EASY,MCQ,20
+OOP,Polymorphism,HARD,CODING,5
+OOP,Polymorphism,HARD,MCQ,20
+OOP,Polymorphism,MEDIUM,CODING,5
+OOP,Polymorphism,MEDIUM,MCQ,20

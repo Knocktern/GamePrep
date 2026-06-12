@@ -153,7 +153,8 @@ public class SessionService {
                 .toList();
 
         return new StartGameResponseDto(saved.getId(), player.getId(), questionDtos,
-            startingHealth, startingHealth, saved.getStatus());
+            startingHealth, startingHealth, saved.getStatus(),
+            request.getPrepField(), request.getTopic(), requestedDiff);
     }
 
     public GameResultDto submitGame(SubmitGameRequestDto request) {
