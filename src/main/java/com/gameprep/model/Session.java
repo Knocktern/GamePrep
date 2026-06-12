@@ -49,8 +49,11 @@ public class Session {
     @Column(length = 80)
     private String topic;
 
+    @Column(length = 20)
+    private String difficulty;
+
     @Column(name = "answered_questions")
-    private int answeredQuestions;
+    private Integer answeredQuestions = 0;
 
     public Session() {
     }
@@ -153,8 +156,16 @@ public class Session {
         this.topic = topic;
     }
 
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
+    }
+
     public int getAnsweredQuestions() {
-        return answeredQuestions;
+        return answeredQuestions == null ? 0 : answeredQuestions;
     }
 
     public void setAnsweredQuestions(int answeredQuestions) {

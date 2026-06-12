@@ -1,5 +1,7 @@
 package com.gameprep.dto;
 
+import java.util.List;
+
 public class GameResultDto {
 
     private Long sessionId;
@@ -10,6 +12,9 @@ public class GameResultDto {
     private int xpGained;
     private int newTotalXp;
     private int newLevel;
+    private int bonusXpGained;
+    private List<AchievementDto> unlockedAchievements = List.of();
+    private List<DailyMissionDto> completedDailyMissions = List.of();
 
     public GameResultDto() {
     }
@@ -88,5 +93,29 @@ public class GameResultDto {
 
     public void setNewLevel(int newLevel) {
         this.newLevel = newLevel;
+    }
+
+    public int getBonusXpGained() {
+        return bonusXpGained;
+    }
+
+    public void setBonusXpGained(int bonusXpGained) {
+        this.bonusXpGained = bonusXpGained;
+    }
+
+    public List<AchievementDto> getUnlockedAchievements() {
+        return unlockedAchievements;
+    }
+
+    public void setUnlockedAchievements(List<AchievementDto> unlockedAchievements) {
+        this.unlockedAchievements = unlockedAchievements;
+    }
+
+    public List<DailyMissionDto> getCompletedDailyMissions() {
+        return completedDailyMissions;
+    }
+
+    public void setCompletedDailyMissions(List<DailyMissionDto> completedDailyMissions) {
+        this.completedDailyMissions = completedDailyMissions;
     }
 }

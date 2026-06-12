@@ -21,6 +21,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     showEmptyMission();
     return;
   }
+
+  if (session.status && session.status !== "ACTIVE") {
+    showInactiveMission("This mission has already ended. Return to the hub to start a new enemy wave.");
+    return;
+  }
+
   renderHUD();
   renderQuestion();
 });
@@ -44,6 +50,24 @@ function showEmptyMission() {
   optsBox.innerHTML = `
     <div class="msg-box error visible" style="display:block; text-align:left;">
       This mission has no seeded questions yet. Return to the hub and choose another mission, or run the missing seed SQL for this topic.
+    </div>
+    <button type="button" class="cyber-btn" onclick="window.location.href='dashboard.html'">RETURN TO HUB</button>`;
+
+  document.getElementById("feedbackMsg").innerHTML = "";
+  renderHUD();
+}
+
+function showInactiveMission(message) {
+  sessionStorage.removeItem("current_game");
+  document.getElementById("qCounter").textContent = "MISSION EXPIRED";
+  document.getElementById("enemyTitle").textContent = "TARGET SIGNAL LOST";
+  document.getElementById("qText").textContent = message;
+
+  const optsBox = document.getElementById("optionsContainer");
+  optsBox.style.gridTemplateColumns = "1fr";
+  optsBox.innerHTML = `
+    <div class="msg-box error visible" style="display:block; text-align:left;">
+      The current combat session is no longer active. Start a fresh mission from the hub.
     </div>
     <button type="button" class="cyber-btn" onclick="window.location.href='dashboard.html'">RETURN TO HUB</button>`;
 
@@ -214,6 +238,12 @@ async function submitAnswer(answerVal, btnRef, isCoding) {
     }, isCoding ? 2500 : 1500);
 
   } catch (err) {
+    if ((err.message || "").toLowerCase().includes("session is not active")) {
+      isSubmitting = false;
+      showInactiveMission("This enemy wave was already completed or failed. Return to the hub to launch a new mission.");
+      return;
+    }
+
     showError(err.message);
     isSubmitting = false;
     document.querySelectorAll(".opt-btn").forEach(b => b.disabled = false);
@@ -230,6 +260,8 @@ function escapeHtml(str) {
 }
 
 function showEndScreen(result, status) {
+  sessionStorage.removeItem("current_game");
+
   const screen = document.getElementById("endScreen");
   const title  = document.getElementById("endTitle");
   screen.classList.remove("hidden");

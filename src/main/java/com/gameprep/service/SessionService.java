@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SessionService {
@@ -91,6 +92,7 @@ public class SessionService {
                 .toList();
     }
 
+    @Transactional
     public StartGameResponseDto startGame(StartGameRequestDto request) {
         if (request == null || request.getPlayerId() == null) {
             throw new RuntimeException("playerId is required");
@@ -166,6 +168,7 @@ public class SessionService {
             request.getPrepField(), request.getTopic(), requestedDiff);
     }
 
+    @Transactional
     public GameResultDto submitGame(SubmitGameRequestDto request) {
         if (request == null) {
             throw new RuntimeException("Request is required");
@@ -212,6 +215,7 @@ public class SessionService {
         return result;
     }
 
+    @Transactional
     public AnswerResultDto submitAnswer(Player player, SubmitSingleAnswerDto request) {
         if (request == null) {
             throw new RuntimeException("Request is required");

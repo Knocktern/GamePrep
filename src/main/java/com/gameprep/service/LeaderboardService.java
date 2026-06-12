@@ -26,11 +26,8 @@ public class LeaderboardService {
     }
 
     public LeaderboardEntryDto upsertEntryForPlayer(Player player, int totalXp, int totalSessions) {
-        LeaderboardEntry entry = leaderboardEntryRepository.findAll().stream()
-                .filter(existing -> player.getId() != null
-                        && existing.getPlayer() != null
-                        && player.getId().equals(existing.getPlayer().getId()))
-                .findFirst()
+        Long playerId = player.getId();
+        LeaderboardEntry entry = leaderboardEntryRepository.findByPlayerId(playerId)
                 .orElse(new LeaderboardEntry());
         entry.setPlayer(player);
         entry.setTotalXp(totalXp);
@@ -38,6 +35,14 @@ public class LeaderboardService {
         if (entry.getId() == null) {
             entry.setRankPosition(0);
         }
-        return leaderboardMapper.toDto(leaderboardEntryRepository.save(entry));
+        LeaderboardEntry saved = leaderboardEntryRepository.save(entry);
+        return new LeaderboardEntryDto(
+            saved.getId(),
+            playerId,
+            player.getUsername(),
+            saved.getRankPosition(),
+            saved.getTotalXp(),
+            saved.getTotalSessions()
+        );
     }
 }
